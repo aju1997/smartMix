@@ -27,6 +27,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,7 +37,7 @@ class _MyHomePageState extends State<MyHomePage> {
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.add),
-            onPressed: () {
+            onPressed: () async {
               Navigator.push(
                   context,
                   MaterialPageRoute<Null>(
@@ -45,7 +47,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     fullscreenDialog: true,
                   ));
             },
-          )
+          ),
+         
         ],
       ),
       drawer: Drawer(
