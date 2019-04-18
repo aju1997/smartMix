@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'newDrinkModal.dart';
 
 void main() => runApp(MyApp());
 
@@ -31,6 +32,21 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute<Null>(
+                    builder: (BuildContext context) {
+                      return AddNewDrink();
+                    },
+                    fullscreenDialog: true,
+                  ));
+            },
+          )
+        ],
       ),
       drawer: Drawer(
         child: Column(children: <Widget>[
@@ -121,7 +137,7 @@ class _MyHomePageState extends State<MyHomePage> {
               child: ListView(
                 scrollDirection: Axis.horizontal,
                 children: <Widget>[
-                  drinkCard('Coke'),
+                  drinkCard('Meth'),
                   SizedBox(
                     width: 5,
                   ),
