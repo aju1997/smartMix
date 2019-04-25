@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
 import 'newDrinkModal.dart';
+import 'dart:async';
+import 'package:flutter/services.dart';
+import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 
+// WORK DONE USING VISUAL STUDIO CODE,
+// USING LIVE SHARE, SO IT WILL SHOW AS COMMIT DONE BY SAUL FOR NOW
+// WILL START USING DIFFRERNT MACHINES AND DO COMMITS INDIVIDUALLY AFTER MILESTONE 1
+// PUT COMMENTS SHOWING WHO WORKED ON WHAT FOR NOW
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -27,8 +34,128 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  
+  // ---------- WORK DONE BY SAUL ----------------
+  FlutterBluetoothSerial bluetooth = FlutterBluetoothSerial.instance;
 
+  List<BluetoothDevice> _devices = [];
+  BluetoothDevice _device;
+  bool _connected = false;
+  bool _pressed = false;
+
+  static final TextEditingController _message = new TextEditingController();
+  static final TextEditingController _text = new TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    initPlatformState();
+  }
+
+  Future<void> initPlatformState() async {
+    List<BluetoothDevice> devices = [];
+
+    try {
+      devices = await bluetooth.getBondedDevices();
+    } on PlatformException {}
+
+    bluetooth.onStateChanged().listen((state) {
+      switch (state) {
+        case FlutterBluetoothSerial.CONNECTED:
+          setState(() {
+            _connected = true;
+            _pressed = false;
+          });
+          break;
+        case FlutterBluetoothSerial.DISCONNECTED:
+          setState(() {
+            _connected = false;
+            _pressed = false;
+          });
+          break;
+        default:
+          print(state);
+          break;
+      }
+    });
+
+    bluetooth.onRead().listen((msg) {
+      setState(() {
+        print('Read: $msg');
+        _text.text += msg;
+      });
+    });
+
+    if (!mounted) return;
+    setState(() {
+      _devices = devices;
+    });
+  }
+
+  List<DropdownMenuItem<BluetoothDevice>> _getDeviceItems() {
+    List<DropdownMenuItem<BluetoothDevice>> items = [];
+    if (_devices.isEmpty) {
+      items.add(DropdownMenuItem(
+        child: Text('NONE'),
+      ));
+    } else {
+      _devices.forEach((device) {
+        items.add(DropdownMenuItem(
+          child: Text(device.name),
+          value: device,
+        ));
+      });
+    }
+    return items;
+  }
+
+  void _connect() {
+    if (_device == null) {
+      show('No device selected.');
+    } else {
+      bluetooth.isConnected.then((isConnected) {
+        if (!isConnected) {
+          bluetooth.connect(_device).catchError((error) {
+            setState(() => _pressed = false);
+          });
+          setState(() => _pressed = true);
+        }
+      });
+    }
+  }
+
+  void _disconnect() {
+    bluetooth.disconnect();
+    setState(() => _pressed = true);
+  }
+
+  void _writeTest() {
+    bluetooth.isConnected.then((isConnected) {
+      if (isConnected) {
+        bluetooth.write(_message.text);
+      }
+    });
+  }
+
+  Future show(
+    String message, {
+    Duration duration: const Duration(seconds: 3),
+  }) async {
+    await new Future.delayed(new Duration(milliseconds: 100));
+    Scaffold.of(context).showSnackBar(
+      new SnackBar(
+        content: new Text(
+          message,
+          style: new TextStyle(
+            color: Colors.white,
+          ),
+        ),
+        duration: duration,
+      ),
+    );
+  }
+// ------------- END OF WORK BY SAUL ---------------
+
+// ------------- WORK DONE BY Dong --------------
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,7 +167,7 @@ class _MyHomePageState extends State<MyHomePage> {
             onPressed: () async {
               Navigator.push(
                   context,
-                  MaterialPageRoute<Null>(
+                  MaterialPageRoute(
                     builder: (BuildContext context) {
                       return AddNewDrink();
                     },
@@ -48,7 +175,13 @@ class _MyHomePageState extends State<MyHomePage> {
                   ));
             },
           ),
-         
+          Padding(
+            padding: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 0.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[],
+            ),
+          ),
         ],
       ),
       drawer: Drawer(
@@ -89,6 +222,18 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
+            Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
+              Text('Device: '),
+              DropdownButton(
+                items: _getDeviceItems(),
+                onChanged: (value) => setState(() => _device = value),
+                value: _device,
+              ),
+              IconButton(
+                  onPressed:
+                      _pressed ? null : _connected ? _disconnect : _connect,
+                  icon: _connected ? Icon(Icons.close) : Icon(Icons.check)),
+            ]),
             Padding(
               padding: EdgeInsets.all(15.0),
               child: Text(
@@ -140,15 +285,36 @@ class _MyHomePageState extends State<MyHomePage> {
               child: ListView(
                 scrollDirection: Axis.horizontal,
                 children: <Widget>[
-                  drinkCard('Meth'),
+                  InkWell(
+                    onTap: () {
+                      _message.text = '1';
+                      _writeTest();
+                      print(_message.text);
+                    },
+                    child: drinkCard('Drink 1'),
+                  ),
                   SizedBox(
                     width: 5,
                   ),
-                  drinkCard('Coke'),
+                  InkWell(
+                    onTap: () {
+                      _message.text = '2';
+                      print(_message.text);
+                      _writeTest();
+                    },
+                    child: drinkCard('Drink 2'),
+                  ),
                   SizedBox(
                     width: 5,
                   ),
-                  drinkCard('Coke'),
+                  InkWell(
+                    onTap: () {
+                      _message.text = '3';
+                      _writeTest();
+                      print(_message.text);
+                    },
+                    child: drinkCard('Drink 3'),
+                  ),
                   SizedBox(
                     width: 5,
                   ),
@@ -213,6 +379,9 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+// ---------- END OF WORK DONE BY DONG
+
+// ---------- DONE BY SAUL -------------------
   Widget drinkCard(String title, {url}) {
     return Card(
       shape: BeveledRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -255,3 +424,5 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
+
+// ----------- END OF WORK DONE BY SAUL
