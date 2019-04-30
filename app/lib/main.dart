@@ -3,6 +3,7 @@ import 'newDrinkModal.dart';
 import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
+import 'UI/drinkCard.dart';
 
 // WORK DONE USING VISUAL STUDIO CODE,
 // USING LIVE SHARE, SO IT WILL SHOW AS COMMIT DONE BY SAUL FOR NOW
@@ -212,7 +213,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           ListTile(
             title: Text('All Drinks'),
-            leading: Icon(Icons.star),
+            leading: Icon(Icons.star),// ----------- END OF WORK DONE BY SAUL
             onTap: () {},
           ),
         ]),
@@ -291,7 +292,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       _writeTest();
                       print(_message.text);
                     },
-                    child: drinkCard('Drink 1'),
+                    child: DrinkCard(title: 'Drink 1'),
                   ),
                   SizedBox(
                     width: 5,
@@ -302,7 +303,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       print(_message.text);
                       _writeTest();
                     },
-                    child: drinkCard('Drink 2'),
+                    child: DrinkCard(title: 'Drink 2'),
                   ),
                   SizedBox(
                     width: 5,
@@ -313,20 +314,20 @@ class _MyHomePageState extends State<MyHomePage> {
                       _writeTest();
                       print(_message.text);
                     },
-                    child: drinkCard('Drink 3'),
+                    child: DrinkCard(title: 'Drink 3'),
                   ),
                   SizedBox(
                     width: 5,
                   ),
-                  drinkCard('Coke'),
+                  DrinkCard(title: 'Coke'),
                   SizedBox(
                     width: 5,
                   ),
-                  drinkCard('Coke'),
+                  DrinkCard(title: 'Coke'),
                   SizedBox(
                     width: 5,
                   ),
-                  drinkCard('Coke'),
+                  DrinkCard(title: 'Coke'),
                 ],
               ),
             ),
@@ -346,27 +347,27 @@ class _MyHomePageState extends State<MyHomePage> {
               child: ListView(
                 scrollDirection: Axis.horizontal,
                 children: <Widget>[
-                  drinkCard('Drink Name'),
+                  DrinkCard(title: 'Drink Name'),
                   SizedBox(
                     width: 5,
                   ),
-                  drinkCard('Drink Name'),
+                  DrinkCard(title: 'Drink Name'),
                   SizedBox(
                     width: 5,
                   ),
-                  drinkCard('Drink Name'),
+                  DrinkCard(title: 'Drink Name'),
                   SizedBox(
                     width: 5,
                   ),
-                  drinkCard('Drink Name'),
+                  DrinkCard(title: 'Drink Name'),
                   SizedBox(
                     width: 5,
                   ),
-                  drinkCard('Drink Name'),
+                  DrinkCard(title: 'Drink Name'),
                   SizedBox(
                     width: 5,
                   ),
-                  drinkCard('Drink Name'),
+                  DrinkCard(title: 'Drink Name'),
                 ],
               ),
             ),
@@ -381,48 +382,4 @@ class _MyHomePageState extends State<MyHomePage> {
 
 // ---------- END OF WORK DONE BY DONG
 
-// ---------- DONE BY SAUL -------------------
-  Widget drinkCard(String title, {url}) {
-    return Card(
-      shape: BeveledRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      child: Container(
-        width: 150,
-        height: 200,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-                color: Colors.black87, blurRadius: 4, offset: Offset(0, 0))
-          ],
-          image: DecorationImage(
-              fit: BoxFit.cover,
-              image: NetworkImage(
-                'https://static.independent.co.uk/s3fs-public/thumbnails/image/2018/05/22/13/gin-cocktails.jpg?w968h681',
-              )),
-        ),
-        child: Center(
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                SizedBox(
-                  height: 75,
-                ),
-                Text(
-                  title,
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 25),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 }
-
-// ----------- END OF WORK DONE BY SAUL
