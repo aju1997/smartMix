@@ -41,7 +41,20 @@ void loop()
       digitalWrite(12, LOW); 
     }
     if (data == '2') {          //Checks whether value of data is equal to 1
-
+      digitalWrite(13, HIGH);
+      digitalWrite(7, HIGH);
+      delay(6000); // dispense
+      digitalWrite(7, LOW);
+      digitalWrite(12, HIGH);
+      delay(5000); // clear water
+      digitalWrite(12, LOW);
+      digitalWrite(10, HIGH);
+      delay(7500); // dispense 
+      digitalWrite(10, LOW);
+      digitalWrite(12, HIGH);
+      delay(5000); // clear water
+      digitalWrite(13, LOW);
+      digitalWrite(12, LOW); 
     }
     if (data == '3') {          //Checks whether value of data is equal to 1
       digitalWrite(13, HIGH);
