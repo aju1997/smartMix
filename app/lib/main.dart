@@ -213,7 +213,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           ListTile(
             title: Text('All Drinks'),
-            leading: Icon(Icons.star),// ----------- END OF WORK DONE BY SAUL
+            leading: Icon(Icons.star), // ----------- END OF WORK DONE BY SAUL
             onTap: () {},
           ),
         ]),
@@ -247,25 +247,46 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Padding(
               padding: EdgeInsets.all(10.0),
-              child: Card(
-                shape: BeveledRectangleBorder(
-                    borderRadius: BorderRadius.circular(20)),
-                child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.width / 2,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                          color: Colors.black87,
-                          blurRadius: 10,
-                          offset: Offset(0, 0))
-                    ],
-                    image: DecorationImage(
-                        fit: BoxFit.cover,
-                        image: NetworkImage(
-                          'https://static.independent.co.uk/s3fs-public/thumbnails/image/2018/05/22/13/gin-cocktails.jpg?w968h681',
-                        )),
+              child: InkWell(
+                onTap: () {
+                  _message.text = '111';
+                  _writeTest();
+                  print(_message.text);
+                },
+                child: Card(
+                  shape: BeveledRectangleBorder(
+                      borderRadius: BorderRadius.circular(20)),
+                  child: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.width / 2,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                            color: Colors.black87,
+                            blurRadius: 10,
+                            offset: Offset(0, 0))
+                      ],
+                      image: DecorationImage(
+                          fit: BoxFit.cover,
+                          image: NetworkImage(
+                            'https://static.independent.co.uk/s3fs-public/thumbnails/image/2018/05/22/13/gin-cocktails.jpg?w968h681',
+                          )),
+                    ),
+                    child: Container(
+                      decoration: BoxDecoration(
+                          color: Color.fromRGBO(0, 0, 0, .3),
+                          borderRadius: BorderRadius.circular(20)),
+                      child: Center(
+                        child: Text(
+                          'Le Drink',
+                          style: TextStyle(
+                            fontSize: 40,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -281,7 +302,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             Container(
-              height: 200,
+              height: 240,
               width: MediaQuery.of(context).size.width,
               child: ListView(
                 scrollDirection: Axis.horizontal,
@@ -342,7 +363,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             Container(
-              height: 200,
+              height: 240,
               width: MediaQuery.of(context).size.width,
               child: ListView(
                 scrollDirection: Axis.horizontal,
