@@ -6,10 +6,10 @@ void setup()
 {         //Sets the data rate in bits per second (baud) for serial data transmission
   EEBlue.begin(9600);
   pinMode(13, OUTPUT); // PUMP
-  pinMode(12, OUTPUT); // Relay 3 uses air to push out remaining water
-  pinMode(10, OUTPUT);  // Valve 1 Drink 1
-  pinMode(7, OUTPUT); // Valve 2 Drink 2
-  pinMode(11, OUTPUT); // Valve 3 Drink 3
+  pinMode(12, OUTPUT); // Valve 1 uses air to push out remaining water
+  pinMode(10, OUTPUT);  // Valve 2 Drink 1
+  pinMode(7, OUTPUT); // Valve 3 Drink 2
+  pinMode(11, OUTPUT); // Valve 4 Drink 3
 
 }
 
