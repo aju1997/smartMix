@@ -19,6 +19,7 @@ int requestMade = -1;
 enum PD_States {idle, pumpOn, p1, clear1, p2, clear2, p3, clear3, pumpOff} PD_State
 void Tick_PourDrink();
 
+// preset drinks
 int drink1[3] = {2000, 5000, 10000};
 int drink2[3] = {7000, 4000, 9000};
 int drink3[3] = {2000, 5000, 3000};
@@ -91,53 +92,49 @@ void Tick_PourDrink() {
 	
 	switch (PD_State) { // transitions
 		case idle:
-			if (requestMade < 0) {
-				PD_State = idle;
-			}
-			else {
-				PD_State = pumpOn;
-			}
-			break;
-		case pumpOn:
-			PD_State = pour;
-			break;
-		case p1:
-			PD_State = clear1;
-			break;
-		case clear1:
-			PD_State = p2;
-			break;
-		case p2:
-			PD_State = clear2;
-			break;
-		case clear2:
-			PD_State = p3;
-			break;
-		case p3:
-			PD_State = clear3;
-			break;
-		case clear3:
-			PD_State = pumpOff;
-			break;
-		case pumpOff:
-			PD_State = idle;
-			break;
+            if (requestMade < 0) {
+                PD_State = openValve;
+                // pump on
+                digitalWrite(13,HIGH);
+            }
+            else {
+                PD_State = idle;
+            }
+            break;
+        case openValve:
+            PD_State = valveWait;
+            break;
+        case valveWait:
+            break;
+        case nextValve:
+            break;
+        default:
+            PD_State = idle;
+            break;
 	} // end transitions
 	switch (PD_States) { // actions
 		case idle:
-			break;
-		case pumpOn:
-			digitalWrite(13, HIGH);
-			break;
-		case pour:
-			++cnt;
-			break;
-		case clearTubes:
-			++cnt;
-			break;
-		case pumpOff:
-			digitalWrite(13, LOW);
-			break;
+            break;
+        case openValve:
+            if (drindex == 0) {
+                // open valve 1
+                digitalWrite(7,High);
+            }
+            else if (drindex == 1) {
+                // open valve 2
+                digitalWrite(10)
+            }
+            else if (drindex == 3) {
+                // open valve 3
+                digitalWrite(12);
+            }
+            break;
+        case valveWait:
+            ++cnt;
+            break;
+        case nextValve:
+            ++drindex;
+            break;
 		default:
 			break;
 	} // end actions
