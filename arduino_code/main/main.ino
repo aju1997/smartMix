@@ -13,6 +13,12 @@ void setup()
 
 }
 
+// global
+
+// state machines
+enum PD_States {idle, pumpOn, p1, p2, p3, clearTubes} PD_State
+void Tick_PourDrink();
+
 int drink1[3] = {2000, 5000, 10000};
 int drink2[3] = {7000, 4000, 9000};
 int drink3[3] = {2000, 5000, 3000};
@@ -75,4 +81,29 @@ void loop()
     
   }
 
+}
+
+void Tick_PourDrink() {
+	static int cnt = 0;
+	static int drindex = 0; 
+	
+	switch (PD_States) { // transitions
+		case idle:
+		
+	}
+	switch (PD_States) { // actions
+		case idle:
+			break;
+		case pumpOn:
+			digitalWrite(13, HIGH);
+			break;
+		case pour:
+			++cnt;
+			break;
+		case pumpOff:
+			digitalWrite(13, LOW);
+			break;
+		default:
+			break;
+	}
 }
