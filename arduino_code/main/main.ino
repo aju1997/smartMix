@@ -7,9 +7,9 @@ void setup()
   EEBlue.begin(9600);
   pinMode(13, OUTPUT); // PUMP
   pinMode(12, OUTPUT); // Valve 1 uses air to push out remaining water
-  pinMode(10, OUTPUT);  // Valve 2 Drink 1
-  pinMode(7, OUTPUT); // Valve 3 Drink 2
-  pinMode(11, OUTPUT); // Valve 4 Drink 3
+  pinMode(11, OUTPUT);  // Valve 2 Drink 1
+  pinMode(10, OUTPUT); // Valve 3 Drink 2
+  pinMode(9, OUTPUT); // Valve 4 Drink 3
 
 }
 
@@ -25,16 +25,27 @@ void loop()
     EEBlue.print(data);        //Print Value inside data in Serial monitor
     EEBlue.print("\n");        //New line
     if (data == '1' || input == "turn on") {          //Checks whether value of data is equal to 1
-      digitalWrite(13, HIGH);
-      digitalWrite(7, HIGH);
+      digitalWrite(13, HIGH);//pump
+      digitalWrite(11, HIGH);//left valve
       delay(5000); // dispense
-      digitalWrite(7, LOW);
-      digitalWrite(12, HIGH);
+      digitalWrite(11, LOW);
+      
+      digitalWrite(12, HIGH); //air valve
       delay(5000); // clear water
       digitalWrite(12, LOW);
-      digitalWrite(10, HIGH);
-      delay(7000); // dispense 
+      
+      digitalWrite(10, HIGH); //middle valve
+      delay(5000); // dispense 
       digitalWrite(10, LOW);
+      
+      digitalWrite(12, HIGH);
+      delay(5000); // dispense 
+      digitalWrite(12, LOW);
+      
+      digitalWrite(9, HIGH); //right valve
+      delay(5000); // dispense 
+      digitalWrite(9, LOW);
+      
       digitalWrite(12, HIGH);
       delay(5000); // clear water
       digitalWrite(13, LOW);
