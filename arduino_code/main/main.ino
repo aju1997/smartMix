@@ -3,7 +3,7 @@
 
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
-char data = 0;     //Variable for storing received data
+//char data = 0;     //Variable for storing received data
 String input = "";
 SoftwareSerial EEBlue(3, 4);
 void setup()
@@ -26,22 +26,26 @@ void setup()
 int drink1[3] = {2000, 5000, 10000};
 int drink2[3] = {7000, 4000, 9000};
 int drink3[3] = {2000, 5000, 3000};
+char data[3];
 void loop()
 {
   if (EEBlue.available() > 0) // Send data only when you receive data:
   {
-    data = EEBlue.read();      //Read the incoming data and store it into variable data
-    input = EEBlue.readString();
+    input = EEBlue.read(); //Read the incoming data and store it into variable data
+    input.toCharArray(data,3);
+    Serial.print(input);
+    Serial.print(data);
+//    input = EEBlue.readString();
     EEBlue.print(data);        //Print Value inside data in Serial monitor
     EEBlue.print("\n");        //New line
-    // 111
-     digitalWrite(11, HIGH); //left(first) valve
-  digitalWrite(10, HIGH); //middle(second) valve
-  digitalWrite(9, HIGH);  // right(third) valve
-    if (data[0] > 0 && data[1] > 0 && data[2] > 0) { // output from all 3 drinks
+    int first = data[0] - '0';
+    int second = data[1] - '0';
+    int third = data[2] - '0';
+    
+    if (first > 0 && second > 0 && third > 0) { // output from all 3 drinks
       digitalWrite(13, LOW);//pump
       digitalWrite(11, LOW);//left valve
-      delay((data[0] - '0')*2450); // dispense
+      delay(first*2450); // dispense
       digitalWrite(10, HIGH);
 
       digitalWrite(12, LOW); //air valve
@@ -49,7 +53,7 @@ void loop()
       digitalWrite(12, HIGH);
 
       digitalWrite(10, LOW); //middle valve
-      delay((data[1] - '0')*2700); // dispense
+      delay(second*2700); // dispense
       digitalWrite(10, HIGH);
 
       digitalWrite(12, LOW); // air valve
@@ -57,7 +61,7 @@ void loop()
       digitalWrite(12, HIGH);
 
       digitalWrite(9, LOW); //right valve
-      delay((data[2] - '0')*3000); // dispense
+      delay(third*3000); // dispense
       digitalWrite(9, HIGH);
 
       digitalWrite(12, LOW); // air valve
@@ -65,10 +69,10 @@ void loop()
       digitalWrite(13, HIGH);
       digitalWrite(12, HIGH);
     }
-    else if (data[0] > 0 && data[1] == 0 && data[2] > 0) { //output from #1 and #3 drink
+    else if (first > 0 && second == 0 && third > 0) { //output from #1 and #3 drink
       digitalWrite(13, LOW);//pump
       digitalWrite(11, LOW);//left valve
-      delay((data[0] - '0')*3350); // dispense
+      delay(first*3350); // dispense
       digitalWrite(10, HIGH);
 
       digitalWrite(12, LOW); //air valve
@@ -76,7 +80,7 @@ void loop()
       digitalWrite(12, HIGH);
 
       digitalWrite(9, LOW); //right valve
-      delay((data[2] - '0')*3450); // dispense
+      delay(third*3450); // dispense
       digitalWrite(9, HIGH);
 
       digitalWrite(12, LOW); // air valve
@@ -84,10 +88,10 @@ void loop()
       digitalWrite(13, HIGH);
       digitalWrite(12, HIGH);
     }
-    else if (data[0] > 0 && data[1] > 0 && data[2] == 0) { //output from #1 and #2 drink
+    else if (first > 0 && second > 0 && third == 0) { //output from #1 and #2 drink
       digitalWrite(13, LOW);//pump
       digitalWrite(11, LOW);//left valve
-      delay((data[0] - '0')*3350); // dispense
+      delay(first*3350); // dispense
       digitalWrite(10, HIGH);
 
       digitalWrite(12, LOW); //air valve
@@ -95,7 +99,7 @@ void loop()
       digitalWrite(12, HIGH);
 
       digitalWrite(10, LOW); //middle valve
-      delay((data[1] - '0')*3300); // dispense
+      delay(second*3300); // dispense
       digitalWrite(10, HIGH);
 
       digitalWrite(12, LOW); // air valve
@@ -103,10 +107,10 @@ void loop()
       digitalWrite(13, HIGH);
       digitalWrite(12, HIGH);
     }
-    else if (data[0] == 0 && data[1] > 0 && data[2] > 0) { //output from #2 and #3 drink
+    else if (first == 0 && second > 0 && third > 0) { //output from #2 and #3 drink
       digitalWrite(13, LOW);//pump
       digitalWrite(10, LOW); //middle valve
-      delay((data[1] - '0')*3300); // dispense
+      delay(second*3300); // dispense
       digitalWrite(10, HIGH);
 
       digitalWrite(12, LOW); // air valve
@@ -114,7 +118,7 @@ void loop()
       digitalWrite(12, HIGH);
 
       digitalWrite(9, LOW); //right valve
-      delay((data[2] - '0')*3450); // dispense
+      delay(third*3450); // dispense
       digitalWrite(9, HIGH);
 
       digitalWrite(12, LOW); // air valve
@@ -122,10 +126,10 @@ void loop()
       digitalWrite(13, HIGH);
       digitalWrite(12, HIGH);
     }
-    else if (data[0] > 0 && data[1] == 0 && data[2] == 0) { //output from #1 drink
+    else if (first > 0 && second == 0 && third == 0) { //output from #1 drink
       digitalWrite(13, LOW);//pump
       digitalWrite(11, LOW);//left valve
-      delay((data[0] - '0')*3350); // dispense
+      delay(first*3350); // dispense
       digitalWrite(10, HIGH);
 
       digitalWrite(12, LOW); // air valve
@@ -133,10 +137,10 @@ void loop()
       digitalWrite(13, HIGH);
       digitalWrite(12, HIGH);
     }
-    else if (data[0] == 0 && data[1] > 0 && data[2] == 0) { //output from #2 drink
+    else if (first == 0 && second > 0 && third == 0) { //output from #2 drink
       digitalWrite(13, LOW);//pump
       digitalWrite(10, LOW); //middle valve
-      delay((data[1] - '0')*3300); // dispense
+      delay(second*3300); // dispense
       digitalWrite(10, HIGH);
       
       digitalWrite(12, LOW); // air valve
@@ -144,10 +148,10 @@ void loop()
       digitalWrite(13, HIGH);
       digitalWrite(12, HIGH);
     }
-    else if (data[0] == 0 && data[1] == 0 && data[2] > 0) { //output from #3 drink
+    else if (first == 0 && second == 0 && third > 0) { //output from #3 drink
       digitalWrite(13, LOW);//pump
       digitalWrite(9, LOW); //right valve
-      delay((data[2] - '0')*3450); // dispense
+      delay(third*3450); // dispense
       digitalWrite(9, HIGH);
 
       digitalWrite(12, LOW); // air valve
