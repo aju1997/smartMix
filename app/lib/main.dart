@@ -59,6 +59,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     try {
       devices = await bluetooth.getBondedDevices();
+      
     } on PlatformException {}
 
     bluetooth.onStateChanged().listen((state) {
@@ -311,7 +312,7 @@ class _MyHomePageState extends State<MyHomePage> {
             Padding(
               padding: EdgeInsets.all(15.0),
               child: Text(
-                'Selection',
+                'Preset',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 30,
@@ -329,7 +330,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   InkWell(
                     onTap: () {
-                      _message.text = '1';
+                      _message.text = '101';
                       _writeTest();
                       print(_message.text);
                     },
@@ -340,7 +341,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   InkWell(
                     onTap: () {
-                      _message.text = '2';
+                      _message.text = '202';
                       print(_message.text);
                       _writeTest();
                     },
@@ -351,7 +352,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   InkWell(
                     onTap: () {
-                      _message.text = '3';
+                      _message.text = '303';
                       _writeTest();
                       print(_message.text);
                     },
@@ -380,7 +381,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 stream: db
                     .collection('drinks')
                     .where('uid', isEqualTo: 'aaa')
-                    .orderBy('createdAt', descending: false)
+                    .orderBy('createdAt', descending: true)
                     .snapshots(),
                 builder: (context, snap) {
                   if (!snap.hasData) {
@@ -400,7 +401,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             itemCount: data.length,
                             itemBuilder: (context, index) {
                               return cardData(
-                                  data[index]['title'], data[index]['tap']);
+                                  data[index]['title'], data[index]['tag']);
                             },
                           );
                   }
