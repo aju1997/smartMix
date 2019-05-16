@@ -20,7 +20,7 @@ enum PD_States {idle, pumpOn, p1, clear1, p2, clear2, p3, clear3, pumpOff} PD_St
 void Tick_PourDrink();
 
 // preset drinks
-int drink1[3] = {2000, 5000, 10000};
+int drink1[3] = {1, 2, 3};
 int drink2[3] = {7000, 4000, 9000};
 int drink3[3] = {2000, 5000, 3000};
 int pourTimes[3][3] = {drink1, drink2, drink3}
@@ -87,6 +87,9 @@ void loop()
 }
 
 void Tick_PourDrink() {
+    /* time to pour 1oz:
+     * drink1, drink3, drink3: 3350, 3300, 3450
+     */
 	static int cnt = 0;
 	static int drindex = 0; 
 	
@@ -95,7 +98,7 @@ void Tick_PourDrink() {
             if (requestMade < 0) {
                 PD_State = openValve;
                 // pump on
-                digitalWrite(13,HIGH);
+                digitalWrite(13,LOW);
             }
             else {
                 PD_State = idle;
@@ -105,8 +108,22 @@ void Tick_PourDrink() {
             PD_State = valveWait;
             break;
         case valveWait:
+            if (cnt < pourTimes[requestMade][drindex]){
+                PD_State = valveWait;
+            }
+            else {
+                PD_State = nextValve;
+            }
             break;
         case nextValve:
+            if (drinex < 3) {
+                PD_State = openValve;
+            }
+            else {
+                PD_State = idle;
+                // pump off
+                digitalWrite(13,HIGH);
+            }
             break;
         default:
             PD_State = idle;
@@ -116,23 +133,36 @@ void Tick_PourDrink() {
 		case idle:
             break;
         case openValve:
-            if (drindex == 0) {
+            if (drindex == 0 && ) {
                 // open valve 1
-                digitalWrite(7,High);
+                digitalWrite(12,LOW);
             }
             else if (drindex == 1) {
                 // open valve 2
-                digitalWrite(10)
+                digitalWrite(10,LOW);
             }
-            else if (drindex == 3) {
+            else if (drindex == 2) {
                 // open valve 3
-                digitalWrite(12);
+                digitalWrite(12,LOW);
             }
             break;
         case valveWait:
             ++cnt;
             break;
         case nextValve:
+            // close prev valve, go to next drink valve index
+            if (drindex == 0) {
+                // open valve 1
+                digitalWrite(10,HIGH);
+            }
+            else if (drindex == 1) {
+                // open valve 2
+                digitalWrite(9,HIGH)
+            }
+            else if (drindex == 3) {
+                // open valve 3
+                digitalWrite(11,HIGH);
+            }
             ++drindex;
             break;
 		default:
