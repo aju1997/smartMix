@@ -2,15 +2,16 @@
 #include <LiquidCrystal.h>
 
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
-
-//char data = 0;     //Variable for storing received data
 String input = "";
+char data[4];
+//char data = 0;     //Variable for storing received data
 SoftwareSerial EEBlue(3, 4);
 void setup()
 { //Sets the data rate in bits per second (baud) for serial data transmission
   //  lcd.begin(6, 2);
   //  lcd.print("sma");
   EEBlue.begin(9600);
+  Serial.begin(9600);
   pinMode(13, OUTPUT); // PUMP
   pinMode(12, OUTPUT); // Valve 1 uses air to push out remaining water
   pinMode(11, OUTPUT);  // Valve 2 Drink 1
@@ -26,26 +27,39 @@ void setup()
 int drink1[3] = {2000, 5000, 10000};
 int drink2[3] = {7000, 4000, 9000};
 int drink3[3] = {2000, 5000, 3000};
-char data[3];
+int first = 0;
+int second = 0;
+int third = 0;
 void loop()
 {
   if (EEBlue.available() > 0) // Send data only when you receive data:
   {
-    input = EEBlue.read(); //Read the incoming data and store it into variable data
-    input.toCharArray(data,3);
-    Serial.print(input);
-    Serial.print(data);
-//    input = EEBlue.readString();
-    EEBlue.print(data);        //Print Value inside data in Serial monitor
-    EEBlue.print("\n");        //New line
-    int first = data[0] - '0';
-    int second = data[1] - '0';
-    int third = data[2] - '0';
+    input = EEBlue.readString(); //Read the incoming data and store it into variable data
     
+    input.toCharArray(data,4);
+//    Serial.print(input);
+//    Serial.print(data);
+//    input = EEBlue.readString();
+//    Serial.print(data);
+    
+    first = data[0] - '0';
+    second = data[1] - '0';
+    third = data[2] - '0';
+//    Serial.print(data[0]);
+//    Serial.print(data[1]);
+//    Serial.print(data[2]);
+//    Serial.print("data");
+//    Serial.print(first);
+//    Serial.print(second);
+//    Serial.print(third);
+//    Serial.print("end");
     if (first > 0 && second > 0 && third > 0) { // output from all 3 drinks
+      Serial.print("Drink 1, 2, 3\n");
+      //change
       digitalWrite(13, LOW);//pump
       digitalWrite(11, LOW);//left valve
-      delay(first*2450); // dispense
+      delay(1000);
+      delay(first*1800); // dispense
       digitalWrite(10, HIGH);
 
       digitalWrite(12, LOW); //air valve
@@ -53,7 +67,7 @@ void loop()
       digitalWrite(12, HIGH);
 
       digitalWrite(10, LOW); //middle valve
-      delay(second*2700); // dispense
+      delay(second*1400); // dispense
       digitalWrite(10, HIGH);
 
       digitalWrite(12, LOW); // air valve
@@ -61,7 +75,7 @@ void loop()
       digitalWrite(12, HIGH);
 
       digitalWrite(9, LOW); //right valve
-      delay(third*3000); // dispense
+      delay(third*1400); // dispense
       digitalWrite(9, HIGH);
 
       digitalWrite(12, LOW); // air valve
@@ -70,9 +84,12 @@ void loop()
       digitalWrite(12, HIGH);
     }
     else if (first > 0 && second == 0 && third > 0) { //output from #1 and #3 drink
+      Serial.print("Drink 1, 3\n");
+      
       digitalWrite(13, LOW);//pump
       digitalWrite(11, LOW);//left valve
-      delay(first*3350); // dispense
+      delay(1000);
+      delay(first*1800); // dispense
       digitalWrite(10, HIGH);
 
       digitalWrite(12, LOW); //air valve
@@ -80,7 +97,7 @@ void loop()
       digitalWrite(12, HIGH);
 
       digitalWrite(9, LOW); //right valve
-      delay(third*3450); // dispense
+      delay(third*1400); // dispense
       digitalWrite(9, HIGH);
 
       digitalWrite(12, LOW); // air valve
@@ -89,9 +106,12 @@ void loop()
       digitalWrite(12, HIGH);
     }
     else if (first > 0 && second > 0 && third == 0) { //output from #1 and #2 drink
+      Serial.print("Drink 1, 2\n");
+      
       digitalWrite(13, LOW);//pump
       digitalWrite(11, LOW);//left valve
-      delay(first*3350); // dispense
+      delay(1000);
+      delay(first*1800); // dispense
       digitalWrite(10, HIGH);
 
       digitalWrite(12, LOW); //air valve
@@ -99,7 +119,7 @@ void loop()
       digitalWrite(12, HIGH);
 
       digitalWrite(10, LOW); //middle valve
-      delay(second*3300); // dispense
+      delay(second*1400); // dispense
       digitalWrite(10, HIGH);
 
       digitalWrite(12, LOW); // air valve
@@ -108,9 +128,12 @@ void loop()
       digitalWrite(12, HIGH);
     }
     else if (first == 0 && second > 0 && third > 0) { //output from #2 and #3 drink
+      Serial.print("Drink 2, 3\n");
+      
       digitalWrite(13, LOW);//pump
       digitalWrite(10, LOW); //middle valve
-      delay(second*3300); // dispense
+      delay(1000);
+      delay(second*1800); // dispense
       digitalWrite(10, HIGH);
 
       digitalWrite(12, LOW); // air valve
@@ -118,7 +141,7 @@ void loop()
       digitalWrite(12, HIGH);
 
       digitalWrite(9, LOW); //right valve
-      delay(third*3450); // dispense
+      delay(third*1400); // dispense
       digitalWrite(9, HIGH);
 
       digitalWrite(12, LOW); // air valve
@@ -127,9 +150,12 @@ void loop()
       digitalWrite(12, HIGH);
     }
     else if (first > 0 && second == 0 && third == 0) { //output from #1 drink
+      Serial.print("Drink 1\n");
+      
       digitalWrite(13, LOW);//pump
       digitalWrite(11, LOW);//left valve
-      delay(first*3350); // dispense
+      delay(1500);
+      delay(first*1900); // dispense
       digitalWrite(10, HIGH);
 
       digitalWrite(12, LOW); // air valve
@@ -138,9 +164,12 @@ void loop()
       digitalWrite(12, HIGH);
     }
     else if (first == 0 && second > 0 && third == 0) { //output from #2 drink
+      Serial.print("Drink 2\n");
+      
       digitalWrite(13, LOW);//pump
       digitalWrite(10, LOW); //middle valve
-      delay(second*3300); // dispense
+      delay(1500);
+      delay(second*1900); // dispense
       digitalWrite(10, HIGH);
       
       digitalWrite(12, LOW); // air valve
@@ -149,9 +178,12 @@ void loop()
       digitalWrite(12, HIGH);
     }
     else if (first == 0 && second == 0 && third > 0) { //output from #3 drink
+      Serial.print("Drink 3\n");
+      
       digitalWrite(13, LOW);//pump
       digitalWrite(9, LOW); //right valve
-      delay(third*3450); // dispense
+      delay(1500);
+      delay(third*1900); // dispense
       digitalWrite(9, HIGH);
 
       digitalWrite(12, LOW); // air valve
