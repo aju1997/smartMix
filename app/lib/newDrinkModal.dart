@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AddNewDrink extends StatefulWidget {
   @override
@@ -9,10 +10,24 @@ class AddNewDrink extends StatefulWidget {
 
 class AddNewDrinkState extends State<AddNewDrink> {
   final _formKey = GlobalKey<FormState>();
-  List<String> _colors = <String>['', 'red', 'green', 'blue', 'orange'];
-  String _color = '';
-  String _color2 = '';
-  String _color3 = '';
+  Firestore db = Firestore.instance;
+  final TextEditingController _drinkName = TextEditingController();
+  List<String> _colors = <String>[
+    '',
+    '0',
+    '1',
+    '2',
+    '3',
+    '4',
+    '5',
+    '6',
+    '7',
+    '8',
+    '9'
+  ];
+  String _drink1 = '';
+  String _drink2 = '';
+  String _drink3 = '';
 
   // -------- WORK DONE BY SAUL -----------------
   @override
@@ -31,6 +46,7 @@ class AddNewDrinkState extends State<AddNewDrink> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 50.0),
                     child: TextFormField(
+                      controller: _drinkName,
                       decoration: InputDecoration(
                         labelText: 'Drink Name',
                       ),
@@ -39,13 +55,14 @@ class AddNewDrinkState extends State<AddNewDrink> {
                           return 'Please Enter Drink Name';
                         }
                       },
+                      
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 50.0),
                     child: FormField(
                       validator: (value) {
-                        if (value == '' || value == null) {
+                        if (_drink1 == '' || _drink1 == null) {
                           return 'Please choose drinks';
                         }
                       },
@@ -54,14 +71,14 @@ class AddNewDrinkState extends State<AddNewDrink> {
                           decoration: InputDecoration(
                             labelText: 'Drink Selector 1',
                           ),
-                          isEmpty: _color == '',
+                          isEmpty: _drink1 == '',
                           child: DropdownButtonHideUnderline(
                             child: DropdownButton(
-                              value: _color,
+                              value: _drink1,
                               isDense: true,
                               onChanged: (String newValue) {
                                 setState(() {
-                                  _color = newValue;
+                                  _drink1 = newValue;
                                   state.didChange(newValue);
                                 });
                               },
@@ -81,7 +98,7 @@ class AddNewDrinkState extends State<AddNewDrink> {
                     padding: const EdgeInsets.symmetric(horizontal: 50.0),
                     child: FormField(
                       validator: (value) {
-                        if (_color == '' || _color == null) {
+                        if (_drink2 == '' || _drink2 == null) {
                           return 'Please choose drinks';
                         }
                       },
@@ -90,14 +107,14 @@ class AddNewDrinkState extends State<AddNewDrink> {
                           decoration: InputDecoration(
                             labelText: 'Drink Selector 2',
                           ),
-                          isEmpty: _color2 == '',
+                          isEmpty: _drink2 == '',
                           child: DropdownButtonHideUnderline(
                             child: DropdownButton(
-                              value: _color2,
+                              value: _drink2,
                               isDense: true,
                               onChanged: (String newValue) {
                                 setState(() {
-                                  _color2 = newValue;
+                                  _drink2 = newValue;
                                   state.didChange(newValue);
                                 });
                               },
@@ -117,7 +134,7 @@ class AddNewDrinkState extends State<AddNewDrink> {
                     padding: const EdgeInsets.symmetric(horizontal: 50.0),
                     child: FormField(
                       validator: (value) {
-                        if (_color == '' || _color == null) {
+                        if (_drink3 == '' || _drink3 == null) {
                           return 'Please choose drinks';
                         }
                       },
@@ -126,14 +143,14 @@ class AddNewDrinkState extends State<AddNewDrink> {
                           decoration: InputDecoration(
                             labelText: 'Drink Selector 3',
                           ),
-                          isEmpty: _color3 == '',
+                          isEmpty: _drink3 == '',
                           child: DropdownButtonHideUnderline(
                             child: DropdownButton(
-                              value: _color3,
+                              value: _drink3,
                               isDense: true,
                               onChanged: (String newValue) {
                                 setState(() {
-                                  _color3 = newValue;
+                                  _drink3 = newValue;
                                   state.didChange(newValue);
                                 });
                               },
@@ -156,6 +173,14 @@ class AddNewDrinkState extends State<AddNewDrink> {
                         // Validate will return true if the form is valid, or false if
                         // the form is invalid.
                         if (_formKey.currentState.validate()) {
+                          String drinkOz = _drink1 + _drink2 + _drink3;
+                          var data = {
+                            'title': _drinkName.text,
+                            'createdAt': DateTime.now(),
+                            'uid': 'aaa',
+                            'tag': drinkOz
+                          };
+                          db.collection('drinks').add(data);
                           Navigator.pop(context);
                           // If the form is valid, we want to show a Snackbar
 

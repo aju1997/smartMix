@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'UI/drinkCard.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 // WORK DONE USING VISUAL STUDIO CODE,
 // USING LIVE SHARE, SO IT WILL SHOW AS COMMIT DONE BY SAUL FOR NOW
@@ -37,6 +38,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   // ---------- WORK DONE BY SAUL ----------------
   FlutterBluetoothSerial bluetooth = FlutterBluetoothSerial.instance;
+  Firestore db = Firestore.instance;
 
   List<BluetoothDevice> _devices = [];
   BluetoothDevice _device;
@@ -154,6 +156,21 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
+
+  Widget cardData(title, tap) {
+    return Padding(
+      padding: EdgeInsets.only(left: 10),
+      child: InkWell(
+        onTap: () {
+          _message.text = tap;
+          _writeTest();
+        },
+        child: DrinkCard(
+          title: title,
+        ),
+      ),
+    );
+  }
 // ------------- END OF WORK BY SAUL ---------------
 
 // ------------- WORK DONE BY Dong --------------
@@ -249,7 +266,7 @@ class _MyHomePageState extends State<MyHomePage> {
               padding: EdgeInsets.all(10.0),
               child: InkWell(
                 onTap: () {
-                  _message.text = '111';
+                  _message.text = '0';
                   _writeTest();
                   print(_message.text);
                 },
@@ -307,6 +324,9 @@ class _MyHomePageState extends State<MyHomePage> {
               child: ListView(
                 scrollDirection: Axis.horizontal,
                 children: <Widget>[
+                  SizedBox(
+                    width: 10,
+                  ),
                   InkWell(
                     onTap: () {
                       _message.text = '1';
@@ -316,7 +336,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: DrinkCard(title: 'Drink 1'),
                   ),
                   SizedBox(
-                    width: 5,
+                    width: 10,
                   ),
                   InkWell(
                     onTap: () {
@@ -327,7 +347,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: DrinkCard(title: 'Drink 2'),
                   ),
                   SizedBox(
-                    width: 5,
+                    width: 10,
                   ),
                   InkWell(
                     onTap: () {
@@ -338,17 +358,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: DrinkCard(title: 'Drink 3'),
                   ),
                   SizedBox(
-                    width: 5,
+                    width: 10,
                   ),
-                  DrinkCard(title: 'Coke'),
-                  SizedBox(
-                    width: 5,
-                  ),
-                  DrinkCard(title: 'Coke'),
-                  SizedBox(
-                    width: 5,
-                  ),
-                  DrinkCard(title: 'Coke'),
                 ],
               ),
             ),
@@ -365,31 +376,35 @@ class _MyHomePageState extends State<MyHomePage> {
             Container(
               height: 240,
               width: MediaQuery.of(context).size.width,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: <Widget>[
-                  DrinkCard(title: 'Drink Name'),
-                  SizedBox(
-                    width: 5,
-                  ),
-                  DrinkCard(title: 'Drink Name'),
-                  SizedBox(
-                    width: 5,
-                  ),
-                  DrinkCard(title: 'Drink Name'),
-                  SizedBox(
-                    width: 5,
-                  ),
-                  DrinkCard(title: 'Drink Name'),
-                  SizedBox(
-                    width: 5,
-                  ),
-                  DrinkCard(title: 'Drink Name'),
-                  SizedBox(
-                    width: 5,
-                  ),
-                  DrinkCard(title: 'Drink Name'),
-                ],
+              child: StreamBuilder(
+                stream: db
+                    .collection('drinks')
+                    .where('uid', isEqualTo: 'aaa')
+                    .orderBy('createdAt', descending: false)
+                    .snapshots(),
+                builder: (context, snap) {
+                  if (!snap.hasData) {
+                    return Center(child: CircularProgressIndicator());
+                  } else {
+                    var data = snap.data.documents;
+                    return data.length == 0
+                        ? Center(
+                            child: Text(
+                              'No custom drinks. Create one.',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
+                          )
+                        : ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: data.length,
+                            itemBuilder: (context, index) {
+                              return cardData(
+                                  data[index]['title'], data[index]['tap']);
+                            },
+                          );
+                  }
+                },
               ),
             ),
             SizedBox(
