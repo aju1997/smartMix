@@ -36,7 +36,7 @@ void loop()
   {
     input = EEBlue.readString(); //Read the incoming data and store it into variable data
     
-    input.toCharArray(data,4);\
+    input.toCharArray(data,4);
     
     first = data[0] - '0';
     second = data[1] - '0';
