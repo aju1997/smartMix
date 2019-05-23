@@ -59,7 +59,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
     try {
       devices = await bluetooth.getBondedDevices();
-      
     } on PlatformException {}
 
     bluetooth.onStateChanged().listen((state) {
@@ -163,8 +162,47 @@ class _MyHomePageState extends State<MyHomePage> {
       padding: EdgeInsets.only(left: 10),
       child: InkWell(
         onTap: () {
-          _message.text = tap;
-          _writeTest();
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  title: Text("Pour Order"),
+                  content: SingleChildScrollView(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Text('Drink 1: ' + tap[0] + ' Oz'),
+                        SizedBox(
+                          width: 5,
+                        ),
+                        Text('Drink 2: ' + tap[1] + ' Oz'
+                        ),
+                        SizedBox(
+                          width: 5,
+                        ),
+                        Text('Drink 3: ' + tap[2] + ' Oz')
+                      ],
+                    ),
+                  ),
+                  actions: <Widget>[
+                    FlatButton(
+                      child: Text("Pour"),
+                      onPressed: () {
+                        _message.text = tap;
+                        _writeTest();
+                        Navigator.pop(context);
+                      },
+                    ),
+                    FlatButton(
+                      child: Text('Cancel'),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    )
+                  ],
+                );
+              });
         },
         child: DrinkCard(
           title: title,

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AddNewDrink extends StatefulWidget {
+  AddNewDrink({Key key, this.data}) : super(key: key);
+  final String data;
   @override
   State<StatefulWidget> createState() {
     return AddNewDrinkState();
@@ -11,6 +13,7 @@ class AddNewDrink extends StatefulWidget {
 class AddNewDrinkState extends State<AddNewDrink> {
   final _formKey = GlobalKey<FormState>();
   Firestore db = Firestore.instance;
+
   final TextEditingController _drinkName = TextEditingController();
   List<String> _colors = <String>[
     '',
@@ -55,7 +58,6 @@ class AddNewDrinkState extends State<AddNewDrink> {
                           return 'Please Enter Drink Name';
                         }
                       },
-                      
                     ),
                   ),
                   Padding(
