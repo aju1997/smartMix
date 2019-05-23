@@ -102,12 +102,11 @@ void loop()
     digitalWrite(12, HIGH);
   }
 
+  // clear input data
   data[0] = '0';
   data[1] = '0';
   data[2] = '0';
   data[3] = '0';
-
-
   }
 
 }
