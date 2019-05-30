@@ -39,10 +39,7 @@ void Tick_Menu();
 enum ID_States {idle, increment, waitRelease, decrement} ID_State;
 void Tick_IncDec();
 int value = 0;
-String data = "";
-int first = 0;
-int second = 0;
-int third = 0;
+String data = "0";
 
 enum Button_States {low, high, wait} Button_State;
 void Tick_Button();
@@ -63,7 +60,12 @@ void cursor() {
     else
       lcd.write(byte(0));
 }
-
+// preset (hard coded) drinks
+int presetDrinks[3][3] = {
+  {1, 2, 3},
+  {4, 5, 6},
+  {7, 8, 9}
+};
 void loop() {
     buttonPress = digitalRead(6);
 
@@ -131,6 +133,7 @@ void Tick_Menu() {
   static int drindex = 0;
   static int storeCounter = 0;
   static int yesDrinkCounter = 0;
+  static int drink[3] = {0,0,0};
   // transitions
   switch (M_State) {
     case M_init:
@@ -152,12 +155,37 @@ void Tick_Menu() {
         M_State = main;
       }
       break;
+    case choose:
+      // uses input from Tick_CursorPos
+      if (cursorPos && !buttonHold && buttonPress) { //custom drinks state
+        drindex = 0;
+        M_State = customs;
+        chooseCustomMenu();
+
+      }
+      else if (!cursorPos && !buttonHold && buttonPress)  { //preset drinks state
+        drindex = 0;
+        M_State = presets;
+        choosePresetMenu(0, presetDrinks[0]);
+      }
+      else {
+        M_State = choose;
+      }
+      break;
+    case presets:
+      if (!buttonHold && buttonPress) {
+        M_State = confirmDrink;
+        confirmDrinkMenu();
+      }
+      else {
+        M_State = presets;
+      }
+      break;
     case create:
       if (drindex < 4) { //once 3 drinks are done
           M_State = create;
       }
       else {
-          data = String(first) + String(second) + String(third); //Stores user data
           M_State = pourStore;
           pourStoreMenu();
       }
@@ -201,6 +229,8 @@ void Tick_Menu() {
     case storeConfirm:
       if (!cursorPos && !buttonHold && buttonPress) {
         M_State = store;
+        // Write to EEPROM
+
         storeDrinkYesMenu();
       }
       else if (cursorPos && !buttonHold && buttonPress) {
@@ -232,6 +262,14 @@ void Tick_Menu() {
       cursor();
       break;
     case choose: //still need to do
+      if (value >= 3) {
+        value = 3;
+      }
+      else if (value <= 1) {
+        value = 1;
+      }
+      drindex = value;
+      choosePresetMenu(drindex, presetDrinks[drindex - 1]);
       break;
     case create:
       if (!buttonHold && buttonPress) {
@@ -245,18 +283,9 @@ void Tick_Menu() {
       else if (value <= 0) {
         value = 0;
       }
-      //store first drink value
-      if (drindex == 1) {
-        first = value;
-      }
-      //store second drink value
-      else if (drindex == 2) {
-        second = value;
-      }
-      //store third drink value
-      else if (drindex == 3) {
-        third = value;
-      }
+      //add if statements to store the value of what the user specified
+      
+      drink[drindex] = value;
       createMenu(drindex, value);
       break;
     case pourStore:
