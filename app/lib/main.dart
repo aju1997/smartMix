@@ -1,10 +1,13 @@
+import 'dart:io';
+import 'dart:async';
+import 'package:mlkit/mlkit.dart';
 import 'package:flutter/material.dart';
 import 'newDrinkModal.dart';
-import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'UI/drinkCard.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:image_picker/image_picker.dart';
 
 // WORK DONE USING VISUAL STUDIO CODE,
 // USING LIVE SHARE, SO IT WILL SHOW AS COMMIT DONE BY SAUL FOR NOW
@@ -44,7 +47,10 @@ class _MyHomePageState extends State<MyHomePage> {
   BluetoothDevice _device;
   bool _connected = false;
   bool _pressed = false;
-
+  var _labels;
+  bool ofAge = false;
+  File _file;
+  FirebaseVisionTextDetector textDetector = FirebaseVisionTextDetector.instance;
   static final TextEditingController _message = new TextEditingController();
   static final TextEditingController _text = new TextEditingController();
 
@@ -157,10 +163,48 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  bool verifyID() {
-    bool result = false;
-    //TODO: Impement Machine Learning Vison to scan ID
+  Future<void> openCamera() async {
+    var file = await ImagePicker.pickImage(source: ImageSource.camera);
+    setState(() {
+      _file = file;
+    });
+  }
 
+  Future<void> scanID() async {
+    var labels = await textDetector.detectFromPath(_file.path);
+
+    labels.forEach((res) {
+      if (res.text.contains('AGE')) {
+        var temp = res.text.split(" ");
+
+        if (int.parse(temp.last) < 2019) {
+          setState(() {
+            ofAge = true;
+          });
+        }
+      } else if (res.text.contains('DOB')) {
+        var temp = res.text.split("/");
+        if (int.parse(temp.last) < 1998) {
+          setState(() {
+            ofAge = true;
+          });
+        }
+      }
+    });
+  }
+
+  Future<bool> verifyID() async {
+    bool result = false;
+
+    await openCamera();
+    if (_file != null) {
+      await scanID();
+      setState(() {
+        _file = null;
+      });
+
+      return ofAge;
+    }
     return result;
   }
 
@@ -197,13 +241,17 @@ class _MyHomePageState extends State<MyHomePage> {
                         actions: <Widget>[
                           FlatButton(
                             child: Text("Verify"),
-                            onPressed: () {
-                              bool result = verifyID();
+                            onPressed: () async {
+                              Navigator.of(context).pop();
+                              bool result = await verifyID();
+
                               if (result) {
                                 _message.text = tap;
                                 _writeTest();
                               }
-                              Navigator.pop(context);
+                              setState(() {
+                                ofAge = false;
+                              });
                             },
                           ),
                           FlatButton(
