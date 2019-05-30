@@ -39,7 +39,10 @@ void Tick_Menu();
 enum ID_States {idle, increment, waitRelease, decrement} ID_State;
 void Tick_IncDec();
 int value = 0;
-String data = "0";
+String data = "";
+int first = 0;
+int second = 0;
+int third = 0;
 
 enum Button_States {low, high, wait} Button_State;
 void Tick_Button();
@@ -154,6 +157,7 @@ void Tick_Menu() {
           M_State = create;
       }
       else {
+          data = String(first) + String(second) + String(third); //Stores user data
           M_State = pourStore;
           pourStoreMenu();
       }
@@ -241,19 +245,18 @@ void Tick_Menu() {
       else if (value <= 0) {
         value = 0;
       }
-      //add if statements to store the value of what the user specified
-      
-//      if (drindex == 1 && data.length() == 1 && data[0] != value) {
-//        data[0] = String(value);
-//        Serial.print(data);
-//      }
-//      if (drindex == 2) {
-//        data += String(value);
-//      }
-//      if (drindex == 3) {
-//        data += String(value);
-//      }
-      //Serial.print(data);
+      //store first drink value
+      if (drindex == 1) {
+        first = value;
+      }
+      //store second drink value
+      else if (drindex == 2) {
+        second = value;
+      }
+      //store third drink value
+      else if (drindex == 3) {
+        third = value;
+      }
       createMenu(drindex, value);
       break;
     case pourStore:
