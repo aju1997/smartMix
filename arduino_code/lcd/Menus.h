@@ -18,9 +18,18 @@ void selectMenu() {
 }
 void choosePresetMenu(int drink, int volumes[3]) {
   lcd.setCursor(0, 0);
-  lcd.print("   Drink ");
-  lcd.print(drink);
-  lcd.print("      ");
+  if (drink == 1) {
+    lcd.print("    Dongster    ");
+  }
+  else if (drink == 2) {
+    lcd.print("   Hectoroni    ");
+  }
+  else if (drink == 3) {
+    lcd.print("       Aju      ");
+  }
+  else if (drink == 4) {
+    lcd.print("     Salulu     ");
+  }
   lcd.setCursor(0, 1);
   lcd.print("volume ");
   lcd.print(volumes[0]);
