@@ -38,6 +38,10 @@ void loop() {
     Tick_CursorPos();
 }
 
+/* inputs: gets joystick up/down input position
+ * return: the updated value of char value
+ * char value is used by Tick_Menu SM when creating drink and to choose drink?
+ */
 void Tick_IncDec() {
     // transitions
     switch (ID_State) {
@@ -85,7 +89,7 @@ void Tick_IncDec() {
 
 /* inputs: either an increment/decrement or select top/bottom
  *         using Tick_IncDec() or Tick_CursorPos respectively
- * return: prints current menu screen from Menus.h
+ * return: prints current menu screen from Menus.h (most LCD writing done here)
  */
 void Tick_Menu() {
   static char drindex = 0;
@@ -140,6 +144,8 @@ void Tick_Menu() {
       break;
     case create:
       if (buttonPress) {
+          // FIXME: button press captured too fast,
+          //        increment is buggy (make SM for button?)
           ++drindex;
           value = 0;
       }
@@ -171,8 +177,8 @@ int getYinput() {
     return 0;
   }
 }
-/* inputs: CP_State (the current state), joystick position input
- * return: store the cursor position, prints cursor to LCD
+/* inputs: joystick position input
+ * return: store the cursor position
  */
 void Tick_CursorPos() {
     if (getYinput() == UP) 
