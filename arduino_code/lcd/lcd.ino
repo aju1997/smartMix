@@ -167,7 +167,6 @@ void Tick_Menu() {
     case choose:
       // uses input from Tick_CursorPos
       if (cursorPos && buttonPress) { //custom drinks state
-        Serial.print("Reached");
         drindex = 0;
         M_State = customs;
         chooseCustomMenu();
@@ -247,8 +246,17 @@ void Tick_Menu() {
         addr = addr + 1;
         EEPROM.write(addr, third);
         addr = addr + 1;
+        valueRead = EEPROM.read(address);
+        address = address + 1;
+        valueRead2 = EEPROM.read(address);
+        address = address + 1;
+        valueRead3 = EEPROM.read(address);
+        address = address + 1;
         if (addr == EEPROM.length()) {
           addr = 0;
+        }
+        if (address == EEPROM.length()) {
+          address = 0;
         }
         storeDrinkYesMenu();
       }
