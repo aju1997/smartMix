@@ -20,9 +20,12 @@ void createMenu(char drink, char amount) {
   drink += '0';
   amount += '0';
   lcd.setCursor(0, 0);
+  // prints drink# currently being edited
   lcd.print("drink");
   lcd.print(drink);
+  lcd.print("         "); // clear the cursor "*"
   lcd.setCursor(0, 1);
   lcd.print("ounces: ");
   lcd.print(amount);
+  lcd.print("         "); // clear the cursor "*"
 }
