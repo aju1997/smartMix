@@ -163,7 +163,7 @@ void Tick_Menu() {
   static int drindex = 0; // current drink being customized (requesting volume of)
   static int storeCounter = 0; // counts after drink storing confirmed
   static int yesDrinkCounter = 0; // counts after pour drink confirmed
-
+  static int numStoredDrinks = 0;
   switch (M_State) { // begin transitions
     case M_init:
       M_State = main;
@@ -189,8 +189,6 @@ void Tick_Menu() {
       if (cursorPos && buttonPress) { //custom drinks state
         drindex = 0;
         M_State = customs;
-        chooseCustomMenu();
-
       }
       else if (!cursorPos && !buttonHold && buttonPress)  { //preset drinks state
         drindex = 0;
@@ -268,25 +266,17 @@ void Tick_Menu() {
     case storeConfirm:
       if (!cursorPos && !buttonHold && buttonPress) {
         M_State = store;
-        //store drink to EEProm
+        //store drink to EEPROM
         EEPROM.write(addr, first);
         addr = addr + 1;
         EEPROM.write(addr, second);
         addr = addr + 1;
         EEPROM.write(addr, third);
         addr = addr + 1;
-        valueRead = EEPROM.read(address);
-        address = address + 1;
-        valueRead2 = EEPROM.read(address);
-        address = address + 1;
-        valueRead3 = EEPROM.read(address);
-        address = address + 1;
         if (addr == EEPROM.length()) {
           addr = 0;
         }
-        if (address == EEPROM.length()) {
-          address = 0;
-        }
+        ++numStoredDrinks;
         storeDrinkYesMenu();
       }
       else if (cursorPos && !buttonHold && buttonPress) {
@@ -328,6 +318,22 @@ void Tick_Menu() {
       drindex = value;
 
       choosePresetMenu(drindex, presetDrinks[drindex - 1]);
+      break;
+    case customs:
+      // range of value limited to number of stored drinks
+      value = (value > numStoredDrinks) ? 0 : value;
+      value = (value < 0) ? numStoredDrinks : value;
+      drindex = value;
+      drindex *= 3;
+      // get drink from EEPROM
+      // 012, 345, 678 ...
+      valueRead  = EEPROM.read(drindex+0);
+      valueRead2 = EEPROM.read(drindex+1);
+      valueRead3 = EEPROM.read(drindex+2);
+      Serial.print(valueRead, DEC);
+      Serial.print(valueRead2, DEC);
+      Serial.print(valueRead3, DEC);
+      chooseCustomMenu(value + 1, valueRead, valueRead2, valueRead3);
       break;
     case create:
       if (!buttonHold && buttonPress) {

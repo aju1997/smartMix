@@ -31,17 +31,27 @@ void choosePresetMenu(int drink, int volumes[3]) {
     lcd.print("     Salulu     ");
   }
   lcd.setCursor(0, 1);
-  lcd.print("volume ");
+  lcd.print("volume: ");
   lcd.print(volumes[0]);
+  lcd.print(",");
   lcd.print(volumes[1]);
+  lcd.print(",");
   lcd.print(volumes[2]);
+  lcd.print("  ");
 }
-void chooseCustomMenu() {
-  lcd.clear();
+void chooseCustomMenu(int drink, int first, int second, int third) {
   lcd.setCursor(0, 0);
-  lcd.print("FINISH");
+  lcd.print("   drink");
+  lcd.print(drink);
+  lcd.print("        ");
   lcd.setCursor(0, 1);
-  lcd.print("THIS");
+  lcd.print("volume: ");
+  lcd.print(first);
+  lcd.print(",");
+  lcd.print(second);
+  lcd.print(",");
+  lcd.print(third);
+  lcd.print("     ");
 }
 void chooseMenu() {
   lcd.clear();
