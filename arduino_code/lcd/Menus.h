@@ -16,12 +16,13 @@ void selectMenu() {
   lcd.print("Customs");
 }
 
-void createMenu(char amount) {
-  static char drink = 1;  
+void createMenu(char drink, char amount) {
+  drink += '0';
+  amount += '0';
   lcd.setCursor(0, 0);
   lcd.print("drink");
-  lcd.print('0' + drink);
+  lcd.print(drink);
   lcd.setCursor(0, 1);
   lcd.print("ounces: ");
-  lcd.print('0' + amount);
+  lcd.print(amount);
 }

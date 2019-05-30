@@ -10,13 +10,14 @@ void setup() {
 #define UP 1
 #define DWN 2
 // gets input from joystick (analog) and button (pin)
-int getInput();
+int getYinput();
 // sets position of cursor using joystick input
 enum CS_States {none, up, down} CS_State;
 void Tick_Joystick();
 // navigates menu options
 enum M_States {M_init, main, select, create, presets, customs} M_State;
 void Tick_Menu();
+// increment and decrement a value with joystick (used for menu navigation)
 
 char cursorPos = 0;
 char buttonPress = 0;
@@ -37,9 +38,11 @@ void Tick_Menu() {
     case main:
       if (buttonPress && cursorPos) {
         M_State = create;
+        createMenu(1, 0);
       }
       else if (buttonPress && !cursorPos)  {
         M_State = select;
+        selectMenu();
       }
       else {
         M_State = main;
@@ -56,18 +59,18 @@ void Tick_Menu() {
     case main:
       break;
     case select:
-      selectMenu();
       break;
     case create:
-      createMenu(1);
       break;
     default:
       break;
   }
 }
 
-
-int getInput() {
+/* inputs: none
+ * return: current joystick position: up, down, or none (center position)
+ */
+int getYinput() {
   if (analogRead(A1) > 550) {
     return UP;
   }
@@ -78,14 +81,17 @@ int getInput() {
     return 0;
   }
 }
+/* inputs: CS_State (the current state), joystick position input
+ * return: store the cursor position, prints cursor to LCD
+ */
 void Tick_Joystick() {
   // transitions
   switch (CS_State) {
     case none:
-      if (getInput() == UP) {
+      if (getYinput() == UP) {
         CS_State = up;
       }
-      else if (getInput() == DWN) {
+      else if (getYinput() == DWN) {
         CS_State = down;
       }
       else {
