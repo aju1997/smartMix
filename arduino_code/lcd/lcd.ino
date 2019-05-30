@@ -6,29 +6,89 @@ void setup() {
   lcd.begin(16, 2);
   pinMode(6,INPUT);
 }
+
 #define NONE 0
 #define UP 1
 #define DWN 2
-// gets input from joystick (analog) and button (pin)
+
+// gets y axis input from joystick (analog)
 int getYinput();
+
 // sets position of cursor using joystick input
-enum CS_States {none, up, down} CS_State;
-void Tick_Joystick();
+enum CP_States {none, up, down} CP_State;
+void Tick_CursorPos();
+
 // navigates menu options
 enum M_States {M_init, main, select, create, presets, customs} M_State;
 void Tick_Menu();
+
 // increment and decrement a value with joystick (used for menu navigation)
+enum ID_States {idle, increment, waitRelease, decrement} ID_State;
+void Tick_IncDec();
+char value = 0;
 
 char cursorPos = 0;
 char buttonPress = 0;
 void loop() {
     buttonPress = digitalRead(6);
+
     delay(1);
     Tick_Menu();
-    Tick_Joystick();
+    Tick_IncDec();
+    Tick_CursorPos();
 }
 
+void Tick_IncDec() {
+    // transitions
+    switch (ID_State) {
+        case idle:
+            if (getYinput() == UP) {
+              ID_State = increment;
+            }
+            else if (getYinput() == DWN) {
+              ID_State = decrement;
+            }
+            else {
+              ID_State = idle;
+            }
+            break;
+        case increment:
+            ID_State = waitRelease;
+            break;
+        case decrement:
+            ID_State = waitRelease;
+            break;
+        case waitRelease:
+            if (getYinput()) {
+              ID_State = waitRelease;
+            }
+            else {
+              ID_State = idle;
+            }
+            break;
+        default:
+            ID_State = idle;
+            break;
+    }
+    // actions
+    switch (ID_State) {
+      case increment:
+        ++value;
+        break;
+      case decrement:
+        --value;
+        break;
+      default:
+        break;
+    }
+}
+
+/* inputs: either an increment/decrement or select top/bottom
+ *         using Tick_IncDec() or Tick_CursorPos respectively
+ * return: prints current menu screen from Menus.h
+ */
 void Tick_Menu() {
+  static char drindex = 0;
   // transitions
   switch (M_State) {
     case M_init:
@@ -36,6 +96,7 @@ void Tick_Menu() {
       mainMenu();
       break;
     case main:
+      // uses input from Tick_CursorPos
       if (buttonPress && cursorPos) {
         M_State = create;
         createMenu(1, 0);
@@ -49,6 +110,12 @@ void Tick_Menu() {
       }
       break;
     case create:
+      if (drindex < 3) {
+          M_State = create;
+      }
+      else {
+          M_State = main;
+      }
       break;
     default:
       M_State = M_init;
@@ -61,6 +128,18 @@ void Tick_Menu() {
     case select:
       break;
     case create:
+      if (buttonPress) {
+          ++drindex;
+          value = 0;
+      }
+      // value comes from Tick_IncDec, in this case its requested volume
+      if (value >= 9) {
+        value = 9;
+      }
+      else if (value <= 0) {
+        value = 0;
+      }
+      createMenu(0, value);
       break;
     default:
       break;
@@ -68,7 +147,7 @@ void Tick_Menu() {
 }
 
 /* inputs: none
- * return: current joystick position: up, down, or none (center position)
+ * return: immediate joystick position: up, down, or none (center position)
  */
 int getYinput() {
   if (analogRead(A1) > 550) {
@@ -81,51 +160,9 @@ int getYinput() {
     return 0;
   }
 }
-/* inputs: CS_State (the current state), joystick position input
+/* inputs: CP_State (the current state), joystick position input
  * return: store the cursor position, prints cursor to LCD
  */
-void Tick_Joystick() {
-  // transitions
-  switch (CS_State) {
-    case none:
-      if (getYinput() == UP) {
-        CS_State = up;
-      }
-      else if (getYinput() == DWN) {
-        CS_State = down;
-      }
-      else {
-        CS_State = none;
-      }
-      break;
-    case up:
-      CS_State = none;
-      break;
-    case down:
-      CS_State = none;
-      break;
-    default:
-      CS_State = none;
-      break;
-      
-  }
-  // actions
-  switch (CS_State) {
-    case up:
-      lcd.setCursor(13,0);
-      lcd.print("*");
-      lcd.setCursor(13,1);
-      lcd.print(" ");
-      cursorPos = 0;
-      break;
-    case down:
-      lcd.setCursor(13,0);
-      lcd.print(" ");
-      lcd.setCursor(13,1);
-      lcd.print("*");
-      cursorPos = 1;
-      break;
-    default:
-      break;
-  }
+void Tick_CursorPos() {
+    cursorPos = getYinput();
 }
