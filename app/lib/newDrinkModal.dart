@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AddNewDrink extends StatefulWidget {
+  AddNewDrink({Key key, this.data}) : super(key: key);
+  final String data;
   @override
   State<StatefulWidget> createState() {
     return AddNewDrinkState();
@@ -11,6 +13,7 @@ class AddNewDrink extends StatefulWidget {
 class AddNewDrinkState extends State<AddNewDrink> {
   final _formKey = GlobalKey<FormState>();
   Firestore db = Firestore.instance;
+  bool isSwitched = false;
   final TextEditingController _drinkName = TextEditingController();
   List<String> _colors = <String>[
     '',
@@ -55,7 +58,6 @@ class AddNewDrinkState extends State<AddNewDrink> {
                           return 'Please Enter Drink Name';
                         }
                       },
-                      
                     ),
                   ),
                   Padding(
@@ -168,6 +170,25 @@ class AddNewDrinkState extends State<AddNewDrink> {
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text('Age Restrict'),
+                        Switch(
+                          onChanged: (value) {
+                            setState(() {
+                              isSwitched = value;
+                            });
+                          },
+                          value: isSwitched,
+                          activeColor: Colors.blue,
+                          activeTrackColor: Colors.lightBlueAccent,
+                        )
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
                     child: RaisedButton(
                       onPressed: () {
                         // Validate will return true if the form is valid, or false if
@@ -178,7 +199,8 @@ class AddNewDrinkState extends State<AddNewDrink> {
                             'title': _drinkName.text,
                             'createdAt': DateTime.now(),
                             'uid': 'aaa',
-                            'tag': drinkOz
+                            'tag': drinkOz,
+                            'restrict': isSwitched
                           };
                           db.collection('drinks').add(data);
                           Navigator.pop(context);
