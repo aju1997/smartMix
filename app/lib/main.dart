@@ -157,7 +157,14 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Widget cardData(title, tap) {
+  bool verifyID() {
+    bool result = false;
+    //TODO: Impement Machine Learning Vison to scan ID
+
+    return result;
+  }
+
+  Widget cardData(title, tap, age) {
     return Padding(
       padding: EdgeInsets.only(left: 10),
       child: InkWell(
@@ -165,43 +172,84 @@ class _MyHomePageState extends State<MyHomePage> {
           showDialog(
               context: context,
               builder: (context) {
-                return AlertDialog(
-                  title: Text("Pour Order"),
-                  content: SingleChildScrollView(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        Text('Drink 1: ' + tap[0] + ' Oz'),
-                        SizedBox(
-                          width: 5,
+                return age == true
+                    ? AlertDialog(
+                        title: Text('Age Restriction'),
+                        content: Container(
+                          height: 100,
+                          child: SingleChildScrollView(
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  Icon(Icons.error, size: 50),
+                                  Text(
+                                      'Must be 21 years or older to pour this drink. Verify age using ID.')
+                                ],
+                              ),
+                            ),
+                          ),
                         ),
-                        Text('Drink 2: ' + tap[1] + ' Oz'
+                        actions: <Widget>[
+                          FlatButton(
+                            child: Text("Verify"),
+                            onPressed: () {
+                              bool result = verifyID();
+                              if (result) {
+                                _message.text = tap;
+                                _writeTest();
+                              }
+                              Navigator.pop(context);
+                            },
+                          ),
+                          FlatButton(
+                            child: Text('Cancel'),
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                          )
+                        ],
+                      )
+                    : AlertDialog(
+                        title: Text("Pour Order"),
+                        content: SingleChildScrollView(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              Text('Drink 1: ' + tap[0] + ' Oz'),
+                              SizedBox(
+                                width: 5,
+                              ),
+                              Text('Drink 2: ' + tap[1] + ' Oz'),
+                              SizedBox(
+                                width: 5,
+                              ),
+                              Text('Drink 3: ' + tap[2] + ' Oz')
+                            ],
+                          ),
                         ),
-                        SizedBox(
-                          width: 5,
-                        ),
-                        Text('Drink 3: ' + tap[2] + ' Oz')
-                      ],
-                    ),
-                  ),
-                  actions: <Widget>[
-                    FlatButton(
-                      child: Text("Pour"),
-                      onPressed: () {
-                        _message.text = tap;
-                        _writeTest();
-                        Navigator.pop(context);
-                      },
-                    ),
-                    FlatButton(
-                      child: Text('Cancel'),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                    )
-                  ],
-                );
+                        actions: <Widget>[
+                          FlatButton(
+                            child: Text("Pour"),
+                            onPressed: () {
+                              _message.text = tap;
+                              _writeTest();
+                              Navigator.pop(context);
+                            },
+                          ),
+                          FlatButton(
+                            child: Text('Cancel'),
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                          )
+                        ],
+                      );
               });
         },
         child: DrinkCard(
@@ -438,8 +486,8 @@ class _MyHomePageState extends State<MyHomePage> {
                             scrollDirection: Axis.horizontal,
                             itemCount: data.length,
                             itemBuilder: (context, index) {
-                              return cardData(
-                                  data[index]['title'], data[index]['tag']);
+                              return cardData(data[index]['title'],
+                                  data[index]['tag'], data[index]['restrict']);
                             },
                           );
                   }

@@ -13,7 +13,7 @@ class AddNewDrink extends StatefulWidget {
 class AddNewDrinkState extends State<AddNewDrink> {
   final _formKey = GlobalKey<FormState>();
   Firestore db = Firestore.instance;
-
+  bool isSwitched = false;
   final TextEditingController _drinkName = TextEditingController();
   List<String> _colors = <String>[
     '',
@@ -170,6 +170,25 @@ class AddNewDrinkState extends State<AddNewDrink> {
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text('Age Restrict'),
+                        Switch(
+                          onChanged: (value) {
+                            setState(() {
+                              isSwitched = value;
+                            });
+                          },
+                          value: isSwitched,
+                          activeColor: Colors.blue,
+                          activeTrackColor: Colors.lightBlueAccent,
+                        )
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
                     child: RaisedButton(
                       onPressed: () {
                         // Validate will return true if the form is valid, or false if
@@ -180,7 +199,8 @@ class AddNewDrinkState extends State<AddNewDrink> {
                             'title': _drinkName.text,
                             'createdAt': DateTime.now(),
                             'uid': 'aaa',
-                            'tag': drinkOz
+                            'tag': drinkOz,
+                            'restrict': isSwitched
                           };
                           db.collection('drinks').add(data);
                           Navigator.pop(context);
