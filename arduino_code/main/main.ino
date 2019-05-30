@@ -57,7 +57,7 @@ void loop()
     digitalWrite(11, HIGH);//left valve off
     
     digitalWrite(12, LOW); // air valve
-    delay(5000); // clear water
+    delay(5000); // clear waterv
     digitalWrite(13, HIGH); //pump off
     digitalWrite(12, HIGH);
   }
