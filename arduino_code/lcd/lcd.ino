@@ -29,13 +29,11 @@ void setup() {
 #define DWN  2
 
 // gets y axis input from joystick (analog)
+// sets position of cursor using joystick input to either top (0) or bottom (1)
 // (get x axis later?)
 int getYinput();
-
-// sets position of cursor using joystick input
-// to either top (0) or bottom (1)
-void Tick_CursorPos();
 char cursorPos = 0;
+
 
 // navigates menu options
 enum M_States {M_init, main, choose, create, presets, customs, pourStore, confirmDrink, store, storeConfirm, yesDrink} M_State;
@@ -87,11 +85,17 @@ int presetDrinks[3][3] = {
   {4, 5, 6},
   {7, 8, 9}
 };
+
 void loop() {
+    // read button press from pin6
     buttonPress = digitalRead(6);
 
-    delay(1);
+    delay(1); // 1 millisecond period
+
+    // the main state machine
     Tick_Menu();
+
+    // state machines used by Tick_Menu()
     Tick_IncDec();
     Tick_CursorPos();
     Tick_Button();
@@ -99,7 +103,8 @@ void loop() {
 
 /* inputs: gets joystick up/down input position
  * return: the updated value of char value
- * char value is used by Tick_Menu SM when creating drink and to choose drink?
+ * bahave: int value is used by Tick_Menu SM when creating drink and to choose drink
+ *         ensures value only increments once while up position is being held
  */
 void Tick_IncDec() {
     // transitions
@@ -146,17 +151,17 @@ void Tick_IncDec() {
     }
 }
 
-/* inputs: either an increment/decrement or select top/bottom
- *         using Tick_IncDec() or Tick_CursorPos respectively
+/* inputs: using "value" from Tick_IncDec()
+ *         using "cursorPos" from Tick_CursorPos()
+ *         using "buttonHold" from Tick_Button() to see if button being held
  * return: prints current menu screen from Menus.h (most LCD writing done here)
  */
 void Tick_Menu() {
-  static int drindex = 0;
-  static int storeCounter = 0;
-  static int yesDrinkCounter = 0;
-  static int drink[3] = {0,0,0};
-  // transitions
-  switch (M_State) {
+  static int drindex = 0; // current drink being customized (requesting volume of)
+  static int storeCounter = 0; // counts after drink storing confirmed
+  static int yesDrinkCounter = 0; // counts after pour drink confirmed
+
+  switch (M_State) { // begin transitions
     case M_init:
       M_State = main;
       mainMenu();
@@ -293,24 +298,25 @@ void Tick_Menu() {
     default:
       M_State = M_init;
       break;
-  }
-  // actions
-  switch (M_State) {
+  } // end transitions
+
+  switch (M_State) { // begin actions
     case main:
-      // print cursor
-      cursor();
+      cursor(); // print cursor to LCD
+      // either chooses drink (top position) or create drink (bottom)
       break;
-    case choose: //still need to do
-      cursor();
+    case choose:
+      cursor(); // print cursor to LCD
+      // either choose from custom drinks or from preset drinks
       break;
     case presets:
-      if (value >= 3) {
+      // range of value limited to the three preset drinks
+      if (value >= 3)
         value = 3;
-      }
-      else if (value <= 1) {
+      else if (value <= 1)
         value = 1;
-      }
       drindex = value;
+
       choosePresetMenu(drindex, presetDrinks[drindex - 1]);
       break;
     case create:
@@ -318,7 +324,6 @@ void Tick_Menu() {
           ++drindex;
           value = 0;
       }
-      // value comes from Tick_IncDec, in this case its requested volume
       if (value >= 9) {
         value = 9;
       }
@@ -326,8 +331,6 @@ void Tick_Menu() {
         value = 0;
       }
       //add if statements to store the value of what the user specified
-      
-      drink[drindex] = value;
       createMenu(drindex, value);
       break;
     case pourStore:
@@ -337,12 +340,14 @@ void Tick_Menu() {
       cursor();
       break;
     case store:
+      // display this screen for 3 seconds
       ++storeCounter;
       break;
     case storeConfirm:
       cursor();
       break;
     case yesDrink:
+      // display this screen for 5 seconds
       ++yesDrinkCounter;
       break;
     default:
@@ -350,30 +355,25 @@ void Tick_Menu() {
   }
 }
 
-/* inputs: none
+/* inputs: analog input from A1
  * return: immediate joystick position: up, down, or none (center position)
+ *         stores cursor position on LCD screen to cursorPos
  */
 int getYinput() {
   if (analogRead(A1) > 550) {
+    cursorPos = 0;
     return UP;
   }
   else if ( analogRead(A1) < 450) {
+    cursorPos = 1;
     return DWN;
   }
   else {
     return 0;
   }
 }
-/* inputs: joystick position input
- * return: store the cursor position
- */
-void Tick_CursorPos() {
-    if (getYinput() == UP) 
-        cursorPos = 0;
-    else if (getYinput() == DWN)
-        cursorPos = 1;
-}
 
+// might need to be fixed?
 void Tick_Button() {
    switch (Button_State) { //Transitions
         case low:
