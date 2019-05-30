@@ -124,6 +124,17 @@ void Tick_Menu() {
   // actions
   switch (M_State) {
     case main:
+      // print cursor
+      lcd.setCursor(13,0);
+      if (!cursorPos)
+        lcd.print("*");
+      else
+        lcd.print(" ");
+      lcd.setCursor(13,1);
+      if (!cursorPos)
+        lcd.print(" ");
+      else
+        lcd.print("*");
       break;
     case select:
       break;
@@ -164,5 +175,8 @@ int getYinput() {
  * return: store the cursor position, prints cursor to LCD
  */
 void Tick_CursorPos() {
-    cursorPos = getYinput();
+    if (getYinput() == UP) 
+        cursorPos = 0;
+    else if (getYinput() == DWN)
+        cursorPos = 1;
 }
