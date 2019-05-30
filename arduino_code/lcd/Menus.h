@@ -9,7 +9,30 @@ void mainMenu() {
   lcd.setCursor(0, 1);
   lcd.print("Create    ");
 }
-
+void selectMenu() {
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Preset Drinks");
+  lcd.setCursor(0, 1);
+  lcd.print("Custom Drinks");
+}
+void choosePresetMenu(int drink, int volumes[3]) {
+  lcd.setCursor(0, 0);
+  lcd.print("   Drink ");
+  lcd.print(drink);
+  lcd.setCursor(0, 1);
+  lcd.print("volume ");
+  lcd.print(volumes[0]);
+  lcd.print(volumes[1]);
+  lcd.print(volumes[2]);
+}
+void chooseCustomMenu() {
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("FINISH");
+  lcd.setCursor(0, 1);
+  lcd.print("THIS");
+}
 void chooseMenu() {
   lcd.clear();
   lcd.setCursor(0, 0);
