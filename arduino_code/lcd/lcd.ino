@@ -29,11 +29,13 @@ void setup() {
 #define DWN  2
 
 // gets y axis input from joystick (analog)
-// sets position of cursor using joystick input to either top (0) or bottom (1)
 // (get x axis later?)
 int getYinput();
-char cursorPos = 0;
 
+// sets position of cursor using joystick input
+// to either top (0) or bottom (1)
+void Tick_CursorPos();
+char cursorPos = 0;
 
 // navigates menu options
 enum M_States {M_init, main, choose, create, presets, customs, pourStore, confirmDrink, store, storeConfirm, yesDrink} M_State;
@@ -357,23 +359,28 @@ void Tick_Menu() {
 
 /* inputs: analog input from A1
  * return: immediate joystick position: up, down, or none (center position)
- *         stores cursor position on LCD screen to cursorPos
  */
 int getYinput() {
   if (analogRead(A1) > 550) {
-    cursorPos = 0;
     return UP;
   }
   else if ( analogRead(A1) < 450) {
-    cursorPos = 1;
     return DWN;
   }
   else {
     return 0;
   }
 }
+/* inputs: joystick position input
+ * return: store the cursor position
+ */
+void Tick_CursorPos() {
+    if (getYinput() == UP) 
+        cursorPos = 0;
+    else if (getYinput() == DWN)
+        cursorPos = 1;
+}
 
-// might need to be fixed?
 void Tick_Button() {
    switch (Button_State) { //Transitions
         case low:
