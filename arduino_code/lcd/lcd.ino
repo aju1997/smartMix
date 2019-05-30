@@ -166,7 +166,8 @@ void Tick_Menu() {
       break;
     case choose:
       // uses input from Tick_CursorPos
-      if (cursorPos && !buttonHold && buttonPress) { //custom drinks state
+      if (cursorPos && buttonPress) { //custom drinks state
+        Serial.print("Reached");
         drindex = 0;
         M_State = customs;
         chooseCustomMenu();
@@ -175,7 +176,8 @@ void Tick_Menu() {
       else if (!cursorPos && !buttonHold && buttonPress)  { //preset drinks state
         drindex = 0;
         M_State = presets;
-        choosePresetMenu(0, presetDrinks[0]);
+        value = 1;
+        choosePresetMenu(1, presetDrinks[0]);
       }
       else {
         M_State = choose;
@@ -279,6 +281,9 @@ void Tick_Menu() {
       cursor();
       break;
     case choose: //still need to do
+      cursor();
+      break;
+    case presets:
       if (value >= 3) {
         value = 3;
       }
