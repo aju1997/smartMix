@@ -1,4 +1,5 @@
 #include "Menus.h"
+#include <EEPROM.h>
 
 byte arrowCursor[8] = {
   B00010,
@@ -43,6 +44,11 @@ String data = "";
 int first = 0;
 int second = 0;
 int third = 0;
+int addr = 0;
+byte valueRead;
+byte valueRead2;
+byte valueRead3;
+int address = 0;
 
 enum Button_States {low, high, wait} Button_State;
 void Tick_Button();
@@ -201,6 +207,16 @@ void Tick_Menu() {
     case storeConfirm:
       if (!cursorPos && !buttonHold && buttonPress) {
         M_State = store;
+        //store drink to EEProm
+        EEPROM.write(addr, first);
+        addr = addr + 1;
+        EEPROM.write(addr, second);
+        addr = addr + 1;
+        EEPROM.write(addr, third);
+        addr = addr + 1;
+        if (addr == EEPROM.length()) {
+          addr = 0;
+        }
         storeDrinkYesMenu();
       }
       else if (cursorPos && !buttonHold && buttonPress) {
