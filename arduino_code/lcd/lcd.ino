@@ -82,10 +82,11 @@ void cursor() {
   // hard to read...
 }
 // preset (hard coded) drinks
-int presetDrinks[3][3] = {
+int presetDrinks[4][3] = {
   {1, 2, 3},
   {4, 5, 6},
-  {7, 8, 9}
+  {7, 8, 9},
+  {6, 5, 4}
 };
 
 void loop() {
@@ -113,13 +114,13 @@ void Tick_IncDec() {
     switch (ID_State) {
         case idle:
             if (getYinput() == UP) {
-              ID_State = increment;
+                ID_State = increment;
             }
             else if (getYinput() == DWN) {
-              ID_State = decrement;
+                ID_State = decrement;
             }
             else {
-              ID_State = idle;
+                ID_State = idle;
             }
             break;
         case increment:
@@ -130,10 +131,10 @@ void Tick_IncDec() {
             break;
         case waitRelease:
             if (getYinput()) {
-              ID_State = waitRelease;
+                ID_State = waitRelease;
             }
             else {
-              ID_State = idle;
+                ID_State = idle;
             }
             break;
         default:
@@ -142,14 +143,14 @@ void Tick_IncDec() {
     }
     // actions
     switch (ID_State) {
-      case increment:
-        ++value;
-        break;
-      case decrement:
-        --value;
-        break;
-      default:
-        break;
+        case increment:
+            ++value;
+            break;
+        case decrement:
+            --value;
+            break;
+        default:
+            break;
     }
 }
 
@@ -208,6 +209,15 @@ void Tick_Menu() {
       }
       else {
         M_State = presets;
+      }
+      break;
+    case customs:
+      if (!buttonHold && buttonPress) {
+        M_State = confirmDrink;
+        confirmDrinkMenu();
+      }
+      else {
+        M_State = customs;
       }
       break;
     case create:
@@ -313,10 +323,8 @@ void Tick_Menu() {
       break;
     case presets:
       // range of value limited to the three preset drinks
-      if (value >= 3)
-        value = 3;
-      else if (value <= 1)
-        value = 1;
+      value = (value > 4) ? 1 : value;
+      value = (value <= 0) ? 4 : value;
       drindex = value;
 
       choosePresetMenu(drindex, presetDrinks[drindex - 1]);
