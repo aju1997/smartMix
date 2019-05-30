@@ -4,9 +4,9 @@ LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
 void mainMenu() {
   lcd.setCursor(0, 0);
-  lcd.print("Select ");
+  lcd.print("Select    ");
   lcd.setCursor(0, 1);
-  lcd.print("Create ");
+  lcd.print("Create    ");
 }
 
 void selectMenu() {
