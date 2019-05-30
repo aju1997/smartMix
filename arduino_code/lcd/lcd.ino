@@ -2,6 +2,7 @@
 #include <EEPROM.h>
 
 byte arrowCursor[8] = {
+  // custome charactor for the cursor
   B00010,
   B00110,
   B01110,
@@ -12,62 +13,73 @@ byte arrowCursor[8] = {
   B00000
 };
 
+int outgoingByte;
 void setup() {
   // put your setup code here, to run once:
   lcd.createChar(0, arrowCursor);
   lcd.begin(16, 2);
   lcd.write(byte(0));
   pinMode(6,INPUT);
-  Serial.begin(9600);
+  Serial.begin(9600); // opens serial port with data rate at 9600 bps
 }
 
+// Macros: indicate joystick position
 #define NONE 0
-#define UP 1
-#define DWN 2
+#define UP   1
+#define DWN  2
 
 // gets y axis input from joystick (analog)
+// (get x axis later?)
 int getYinput();
 
 // sets position of cursor using joystick input
-enum CP_States {none, up, down} CP_State;
+// to either top (0) or bottom (1)
 void Tick_CursorPos();
+char cursorPos = 0;
 
 // navigates menu options
 enum M_States {M_init, main, choose, create, presets, customs, pourStore, confirmDrink, store, storeConfirm, yesDrink} M_State;
 void Tick_Menu();
 
-// increment and decrement a value with joystick (used for menu navigation)
+// increment and decrement a value (int value) with joystick (used for menu navigation)
 enum ID_States {idle, increment, waitRelease, decrement} ID_State;
 void Tick_IncDec();
 int value = 0;
-String data = "";
+
+String data = ""; // data to second
+// first,second,third temporarily hold value to put into data string
 int first = 0;
 int second = 0;
 int third = 0;
-int addr = 0;
+
+// variables for EEPROM write/read
+int addr = 0; // address to write to EEPROM
+// three next values store three drink volume values 
 byte valueRead;
 byte valueRead2;
 byte valueRead3;
-int address = 0;
+int address = 0; // address to read from EEPROM
 
+// track if button high, low, being held down
 enum Button_States {low, high, wait} Button_State;
 void Tick_Button();
-
-char cursorPos = 0;
 char buttonPress = 0;
 char buttonHold = 0;
 
+// prints cursor to LCD screen using cursor pos
 void cursor() {
+  // cursor at top/bottom at col 13 of LCD
   lcd.setCursor(13,0);
-    if (!cursorPos)
-      lcd.write(byte(0));
-    else
-      lcd.print(" ");
-    lcd.setCursor(13,1);
-    if (!cursorPos)
-      lcd.print(" ");
-    else
-      lcd.write(byte(0));
+  if (!cursorPos) // cursor pos is at top row
+    lcd.write(byte(0));
+  else            
+    lcd.print(" ");
+  lcd.setCursor(13,1);
+  if (!cursorPos)
+    lcd.print(" ");
+  else
+    lcd.write(byte(0)); // cursor pos is at bottom row
+  // hard to read...
 }
 // preset (hard coded) drinks
 int presetDrinks[3][3] = {
