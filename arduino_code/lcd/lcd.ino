@@ -13,6 +13,29 @@ byte arrowCursor[8] = {
   B00000
 };
 
+byte upArrow[8] = {
+  B00000,
+  B00100,
+  B01110,
+  B11111,
+  B01110,
+  B01110,
+  B00000,
+  B00000
+};
+
+byte downArrow[8] = {
+  B00000,
+  B00000,
+  B01110,
+  B01110,
+  B11111,
+  B01110,
+  B00100,
+  B00000
+};
+
+
 int outgoingByte;
 void setup() {
   // put your setup code here, to run once:
