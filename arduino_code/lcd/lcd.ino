@@ -38,7 +38,7 @@ void Tick_CursorPos();
 char cursorPos = 0;
 
 // navigates menu options
-enum M_States {M_init, main, choose, create, presets, customs, pourStore, confirmDrink, store, storeConfirm, yesDrink} M_State;
+enum M_States {M_init, main, choose, create, presets, customs, pourStore, confirmDrink, store, noStoreMenu, storeConfirm, yesDrink, noCustom} M_State;
 void Tick_Menu();
 
 // increment and decrement a value (int value) with joystick (used for menu navigation)
@@ -163,6 +163,7 @@ void Tick_Menu() {
   static int drindex = 0; // current drink being customized (requesting volume of)
   static int storeCounter = 0; // counts after drink storing confirmed
   static int yesDrinkCounter = 0; // counts after pour drink confirmed
+  static int noCustomCounter = 0; // counts seconds for the no custom drink menu
   static int numStoredDrinks = 0;
   switch (M_State) { // begin transitions
     case M_init:
@@ -186,7 +187,7 @@ void Tick_Menu() {
       break;
     case choose:
       // uses input from Tick_CursorPos
-      if (cursorPos && buttonPress) { //custom drinks state
+      if (cursorPos && !buttonHold && buttonPress) { //custom drinks state
         drindex = 0;
         M_State = customs;
       }
@@ -210,7 +211,11 @@ void Tick_Menu() {
       }
       break;
     case customs:
-      if (!buttonHold && buttonPress) {
+      if (numStoredDrinks == 0) {
+        M_State = noStoreMenu;
+        noCustomSaved(); 
+      }
+      else if (!buttonHold && buttonPress) {
         M_State = confirmDrink;
         confirmDrinkMenu();
       }
@@ -297,6 +302,16 @@ void Tick_Menu() {
         mainMenu();
       }
       break;
+    case noStoreMenu:
+      if (noCustomCounter < 1500) {
+        M_State = noStoreMenu;
+      }
+      else {
+        noCustomCounter = 0;
+        M_State = main;
+        mainMenu();
+      }
+      break;
     default:
       M_State = M_init;
       break;
@@ -365,6 +380,9 @@ void Tick_Menu() {
     case yesDrink:
       // display this screen for 5 seconds
       ++yesDrinkCounter;
+      break;
+    case noStoreMenu:
+      ++noCustomCounter;
       break;
     default:
       break;
