@@ -39,6 +39,20 @@ void choosePresetMenu(int drink, int volumes[3]) {
   lcd.print(volumes[2]);
   lcd.print("  ");
 }
+void noCustomSaved() {
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("No drinks");
+  lcd.setCursor(0, 1);
+  lcd.print("saved yet");
+}
+void Hi() {
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Shouldn't");
+  lcd.setCursor(0, 1);
+  lcd.print("be here");
+}
 void chooseCustomMenu(int drink, int first, int second, int third) {
   lcd.setCursor(0, 0);
   lcd.print("   drink");
