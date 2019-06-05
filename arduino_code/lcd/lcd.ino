@@ -228,6 +228,7 @@ void Tick_Menu() {
           M_State = create;
       }
       else {
+          data = String(first) + String(second) + String(third);
           M_State = pourStore;
           pourStoreMenu();
       }
@@ -336,7 +337,7 @@ void Tick_Menu() {
       break;
     case customs:
       // range of value limited to number of stored drinks
-      value = (value > numStoredDrinks) ? 0 : value;
+      value = (value >= numStoredDrinks) ? 0 : value;
       value = (value < 0) ? numStoredDrinks : value;
       drindex = value;
       drindex *= 3;
@@ -360,6 +361,16 @@ void Tick_Menu() {
       }
       else if (value <= 0) {
         value = 0;
+      }
+      //storing drinks into first, second, third
+      if (drindex == 1) {
+        first = value;
+      }
+      else if (drindex == 2) {
+        second = value;
+      }
+      else if (drindex == 3) {
+        third = value;
       }
       //add if statements to store the value of what the user specified
       createMenu(drindex, value);

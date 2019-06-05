@@ -46,13 +46,7 @@ void noCustomSaved() {
   lcd.setCursor(0, 1);
   lcd.print("saved yet");
 }
-void Hi() {
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print("Shouldn't");
-  lcd.setCursor(0, 1);
-  lcd.print("be here");
-}
+
 void chooseCustomMenu(int drink, int first, int second, int third) {
   lcd.setCursor(0, 0);
   lcd.print("   drink");
@@ -90,41 +84,41 @@ void createMenu(int drink, char amount) {
 }
 
 void pourStoreMenu() {
-	lcd.clear();
-	lcd.setCursor(0, 0);
-	lcd.print("Pour");
-	lcd.setCursor(0, 1);
-	lcd.print("Store");
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Pour");
+  lcd.setCursor(0, 1);
+  lcd.print("Store");
 }
 
 void confirmDrinkMenu() {
-	lcd.clear();
-	lcd.setCursor(0, 0);
-	lcd.print("Confirm? Yes");
-	lcd.setCursor(9, 1);
-	lcd.print("No");
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Confirm? Yes");
+  lcd.setCursor(9, 1);
+  lcd.print("No");
 }
 
 void storeConfirmMenu() {
-	lcd.clear();
-	lcd.setCursor(0, 0);
-	lcd.print("Confirm? Yes");
-	lcd.setCursor(9, 1);
-	lcd.print("No");
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Confirm? Yes");
+  lcd.setCursor(9, 1);
+  lcd.print("No");
 }
 
 void storeDrinkYesMenu() {
-	lcd.clear();
-	lcd.setCursor(0, 0);
-	lcd.print("Your drink has");
-	lcd.setCursor(0, 1);
-	lcd.print("been stored!");
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Your drink has");
+  lcd.setCursor(0, 1);
+  lcd.print("been stored!");
 }
 
 void pouringDrinkYesMenu() {
-	lcd.clear();
-	lcd.setCursor(0, 0);
-	lcd.print("Your drink is");
-	lcd.setCursor(0, 1);
-	lcd.print("pouring!");
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Your drink is");
+  lcd.setCursor(0, 1);
+  lcd.print("pouring!");
 }
