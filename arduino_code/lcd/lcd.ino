@@ -2,7 +2,7 @@
 #include <EEPROM.h>
 
 byte arrowCursor[8] = {
-  // custome charactor for the cursor
+  // custom charactor for the cursor
   B00010,
   B00110,
   B01110,
@@ -40,8 +40,12 @@ int outgoingByte;
 void setup() {
   // put your setup code here, to run once:
   lcd.createChar(0, arrowCursor);
+  lcd.createChar(1, upArrow);
+  lcd.createChar(2, downArrow);
   lcd.begin(16, 2);
   lcd.write(byte(0));
+  lcd.write(byte(1));
+  lcd.write(byte(2));
   pinMode(6,INPUT);
   Serial.begin(9600); // opens serial port with data rate at 9600 bps
 }
@@ -81,6 +85,7 @@ int addr = 0; // address to write to EEPROM
 byte valueRead;
 byte valueRead2;
 byte valueRead3;
+byte num;
 int address = 0; // address to read from EEPROM
 
 // track if button high, low, being held down
@@ -103,6 +108,16 @@ void cursor() {
   else
     lcd.write(byte(0)); // cursor pos is at bottom row
   // hard to read...
+}
+
+void upDownArrow() {
+  //up arrow
+  lcd.setCursor(15,0);
+  lcd.write(byte(1));
+  
+  //down arrow
+  lcd.setCursor(15,1);
+  lcd.write(byte(2));
 }
 // preset (hard coded) drinks
 int presetDrinks[4][3] = {
@@ -234,6 +249,8 @@ void Tick_Menu() {
       }
       break;
     case customs:
+      //if we want to store even when arduino is off
+//      num = EEPROM.read(100);
       if (numStoredDrinks == 0) {
         M_State = noStoreMenu;
         noCustomSaved(); 
@@ -302,10 +319,14 @@ void Tick_Menu() {
         addr = addr + 1;
         EEPROM.write(addr, third);
         addr = addr + 1;
+        //if we want to store even when arduino is off
+        //EEPROM.update(101, addr);
         if (addr == EEPROM.length()) {
           addr = 0;
         }
         ++numStoredDrinks;
+        //if we want to store even when arduino is off
+//        EEPROM.update(100, numStoredDrinks);
         storeDrinkYesMenu();
       }
       else if (cursorPos && !buttonHold && buttonPress) {
@@ -373,6 +394,10 @@ void Tick_Menu() {
       Serial.print(valueRead2, DEC);
       Serial.print(valueRead3, DEC);
       chooseCustomMenu(value + 1, valueRead, valueRead2, valueRead3);
+      if (numStoredDrinks > 1) {
+        upDownArrow();
+      }
+      
       break;
     case create:
       if (!buttonHold && buttonPress) {
