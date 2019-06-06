@@ -1,5 +1,6 @@
 #include <SoftwareSerial.h>
 #include <LiquidCrystal.h>
+#include <Wire.h>
 
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 String input = "";
@@ -22,6 +23,10 @@ void setup()
   digitalWrite(11, HIGH); //left(first) valve
   digitalWrite(10, HIGH); //middle(second) valve
   digitalWrite(9, HIGH);  // right(third) valve
+
+  //Slave Receiver
+  Wire.begin(8);                // join i2c bus with address #8
+  //Wire.onReceive(receiveEvent); // register event
 }
 
 int drink1[3] = {2000, 5000, 10000};
@@ -30,18 +35,41 @@ int drink3[3] = {2000, 5000, 3000};
 int first = 0;
 int second = 0;
 int third = 0;
+
+void receiveEvent(int howMany) {
+  while (1 < Wire.available()) { // loop through all except last character
+    char c = Wire.read(); // receive byte as a character
+    Serial.print(c);         // print the character
+  }
+//  int x = Wire.read();    // receive byte as an integer
+//  Serial.println(x);         // print the integer
+}
+
+
 void loop()
 {
+  //LCD
+  Wire.requestFrom(2, 3);    // request 6 bytes from slave device #2
+  int i = 0;
+  while(Wire.available())    // slave may send less than requested
+  { 
+    char c = Wire.read();    // receive a byte as character
+    data[i] = c;
+    ++i;
+    Serial.print(c);         // print the character
+  }
+
+  //Bluetooth
   if (EEBlue.available() > 0) // Send data only when you receive data:
   {
     input = EEBlue.readString(); //Read the incoming data and store it into variable data
-    
-    input.toCharArray(data,4);
-    
-    first = data[0] - '0';
-    second = data[1] - '0';
-    third = data[2] - '0';
 
+    input.toCharArray(data,4);
+  }
+  first = data[0] - '0';
+  second = data[1] - '0';
+  third = data[2] - '0';
+  
   //pinMode(11, OUTPUT);  // Valve 2 Drink 1
   if (first > 0) { //output from drink 1
     Serial.print("Drink 1 output\n");
@@ -60,6 +88,7 @@ void loop()
     delay(5000); // clear waterv
     digitalWrite(13, HIGH); //pump off
     digitalWrite(12, HIGH);
+    first = 0;
   }
 
   //pinMode(10, OUTPUT); // Valve 3 Drink 2
@@ -80,6 +109,7 @@ void loop()
     delay(5000); // clear water
     digitalWrite(13, HIGH); //pump off
     digitalWrite(12, HIGH);
+    second = 0;
   }
 
   //pinMode(9, OUTPUT); // Valve 4 Drink 3
@@ -100,6 +130,7 @@ void loop()
     delay(5000); // clear water
     digitalWrite(13, HIGH); //pump off
     digitalWrite(12, HIGH);
+    third = 0;
   }
 
   // clear input data
@@ -107,6 +138,5 @@ void loop()
   data[1] = '0';
   data[2] = '0';
   data[3] = '0';
-  }
 
 }
