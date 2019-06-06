@@ -16,7 +16,7 @@ void selectMenu() {
   lcd.setCursor(0, 1);
   lcd.print("Custom Drinks");
 }
-void choosePresetMenu(int drink, int volumes[3]) {
+void choosePresetMenu(int drink, char volumes[3]) {
   lcd.setCursor(0, 0);
   if (drink == 1) {
     lcd.print("    Dongster    ");
