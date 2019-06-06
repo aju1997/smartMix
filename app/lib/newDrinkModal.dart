@@ -200,6 +200,9 @@ class AddNewDrinkState extends State<AddNewDrink> {
                             'createdAt': DateTime.now(),
                             'uid': 'aaa',
                             'tag': drinkOz,
+                            'total': int.parse(_drink1) +
+                                int.parse(_drink2) +
+                                int.parse(_drink3),
                             'restrict': isSwitched
                           };
                           db.collection('drinks').add(data);

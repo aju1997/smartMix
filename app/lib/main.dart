@@ -2,12 +2,14 @@ import 'dart:io';
 import 'dart:async';
 import 'package:mlkit/mlkit.dart';
 import 'package:flutter/material.dart';
+import 'UI/confirmModal.dart';
 import 'newDrinkModal.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'UI/drinkCard.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
+import 'listAllDrinks.dart';
 
 // WORK DONE USING VISUAL STUDIO CODE,
 // USING LIVE SHARE, SO IT WILL SHOW AS COMMIT DONE BY SAUL FOR NOW
@@ -47,7 +49,6 @@ class _MyHomePageState extends State<MyHomePage> {
   BluetoothDevice _device;
   bool _connected = false;
   bool _pressed = false;
-  var _labels;
   bool ofAge = false;
   File _file;
   FirebaseVisionTextDetector textDetector = FirebaseVisionTextDetector.instance;
@@ -170,24 +171,41 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void confirmModal(bool check) {
+    Navigator.of(context).push(
+      PageRouteBuilder(
+        opaque: false,
+        pageBuilder: (BuildContext context, _, __) => ConfirmModal(
+              valid: check,
+            ),
+      ),
+    );
+  }
+
   Future<void> scanID() async {
     var labels = await textDetector.detectFromPath(_file.path);
 
     labels.forEach((res) {
       if (res.text.contains('AGE')) {
         var temp = res.text.split(" ");
-
         if (int.parse(temp.last) < 2019) {
           setState(() {
             ofAge = true;
           });
+          confirmModal(true);
+        } else {
+          confirmModal(false);
         }
       } else if (res.text.contains('DOB')) {
         var temp = res.text.split("/");
-        if (int.parse(temp.last) < 1998) {
+        temp = temp.last.split("\n");
+        if (int.parse(temp[0]) < 1998) {
           setState(() {
             ofAge = true;
           });
+          confirmModal(true);
+        } else {
+          confirmModal(false);
         }
       }
     });
@@ -356,7 +374,14 @@ class _MyHomePageState extends State<MyHomePage> {
           ListTile(
             title: Text('Home'),
             leading: Icon(Icons.home),
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => MyHomePage(title: 'smartMix'),
+                ),
+              );
+            },
           ),
           ListTile(
             title: Text('Create Mix'),
@@ -366,7 +391,10 @@ class _MyHomePageState extends State<MyHomePage> {
           ListTile(
             title: Text('All Drinks'),
             leading: Icon(Icons.star), // ----------- END OF WORK DONE BY SAUL
-            onTap: () {},
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => ListDrinks()));
+            },
           ),
         ]),
       ),
