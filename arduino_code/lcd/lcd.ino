@@ -1,7 +1,5 @@
 #include "Menus.h"
 #include <EEPROM.h>
-#include <Wire.h>
-#include <string.h>
 
 byte arrowCursor[8] = {
   // custom charactor for the cursor
@@ -50,13 +48,7 @@ void setup() {
   lcd.write(byte(2));
   pinMode(6,INPUT);
   Serial.begin(9600); // opens serial port with data rate at 9600 bps
-
-  //Master Sender
-  Wire.begin(); // join i2c bus (address optional for master)
 }
-
-//For sending data to slave Arduino
-//char x[] = "123";
 
 // Macros: indicate joystick position
 #define NONE 0
@@ -81,7 +73,7 @@ enum ID_States {idle, increment, waitRelease, decrement} ID_State;
 void Tick_IncDec();
 int value = 0;
 
-char data[3]; // data to second
+String data = ""; // data to second
 // first,second,third temporarily hold value to put into data string
 int first = 0;
 int second = 0;
@@ -128,11 +120,11 @@ void upDownArrow() {
   lcd.write(byte(2));
 }
 // preset (hard coded) drinks
-char presetDrinks[4][3] = {
-  {'1', '2', '3'},
-  {'4', '5', '6'},
-  {'7', '8', '9'},
-  {'6', '5', '4'}
+int presetDrinks[4][3] = {
+  {1, 2, 3},
+  {4, 5, 6},
+  {7, 8, 9},
+  {6, 5, 4}
 };
 
 void loop() {
@@ -250,9 +242,6 @@ void Tick_Menu() {
     case presets:
       if (!buttonHold && buttonPress) {
         M_State = confirmDrink;
-        data[0] = presetDrinks[drindex - 1][0];
-        data[1] = presetDrinks[drindex - 1][1];
-        data[2] = presetDrinks[drindex - 1][2];
         confirmDrinkMenu();
       }
       else {
@@ -279,9 +268,7 @@ void Tick_Menu() {
           M_State = create;
       }
       else {
-          data[0] = first + '0';
-          data[1] = second + '0';
-          data[2] = third + '0';
+          data = String(first) + String(second) + String(third);
           M_State = pourStore;
           pourStoreMenu();
       }
@@ -302,12 +289,6 @@ void Tick_Menu() {
     case confirmDrink:
       if (!cursorPos && !buttonHold && buttonPress) {
         M_State = yesDrink;
-        
-        Wire.beginTransmission(8); // transmit to device #8
-        Wire.write(data);              // sends one byte
-        Wire.endTransmission();    // stop transmitting
-        //x++;
-        
         pouringDrinkYesMenu();
       }
       else if (cursorPos && !buttonHold && buttonPress) {
@@ -339,13 +320,11 @@ void Tick_Menu() {
         EEPROM.write(addr, third);
         addr = addr + 1;
         //if we want to store even when arduino is off
-        //EEPROM.update(101, addr);
         if (addr == EEPROM.length()) {
           addr = 0;
         }
         ++numStoredDrinks;
         //if we want to store even when arduino is off
-//        EEPROM.update(100, numStoredDrinks);
         storeDrinkYesMenu();
       }
       else if (cursorPos && !buttonHold && buttonPress) {
