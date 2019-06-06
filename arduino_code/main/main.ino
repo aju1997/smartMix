@@ -5,12 +5,11 @@
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 String input = "";
 char data[4];
-//char data = 0;     //Variable for storing received data
 SoftwareSerial EEBlue(3, 4);
+
 void setup()
-{ //Sets the data rate in bits per second (baud) for serial data transmission
-  //  lcd.begin(6, 2);
-  //  lcd.print("sma");
+{ 
+  //Sets the data rate in bits per second (baud) for serial data transmission
   EEBlue.begin(9600);
   Serial.begin(9600);
   pinMode(13, OUTPUT); // PUMP
@@ -26,7 +25,6 @@ void setup()
 
   //Slave Receiver
   Wire.begin(8);                // join i2c bus with address #8
-  //Wire.onReceive(receiveEvent); // register event
 }
 
 int drink1[3] = {2000, 5000, 10000};
@@ -41,10 +39,7 @@ void receiveEvent(int howMany) {
     char c = Wire.read(); // receive byte as a character
     Serial.print(c);         // print the character
   }
-//  int x = Wire.read();    // receive byte as an integer
-//  Serial.println(x);         // print the integer
 }
-
 
 void loop()
 {
@@ -70,8 +65,8 @@ void loop()
   second = data[1] - '0';
   third = data[2] - '0';
   
-  //pinMode(11, OUTPUT);  // Valve 2 Drink 1
-  if (first > 0) { //output from drink 1
+  if (first > 0) { 
+    //output from drink 1
     Serial.print("Drink 1 output\n");
     Serial.print(first);
     Serial.print(second);
@@ -90,9 +85,9 @@ void loop()
     digitalWrite(12, HIGH);
     first = 0;
   }
-
-  //pinMode(10, OUTPUT); // Valve 3 Drink 2
-  if (second > 0) { //output from drink 2
+  
+  if (second > 0) { 
+    //output from drink 2
     Serial.print("Drink 2 output\n");
     Serial.print(first);
     Serial.print(second);
@@ -112,7 +107,6 @@ void loop()
     second = 0;
   }
 
-  //pinMode(9, OUTPUT); // Valve 4 Drink 3
   if (third > 0) { //output from drink 3
     Serial.print("Drink 3 output\n");
     Serial.print(first);
