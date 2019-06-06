@@ -1,5 +1,7 @@
 #include "Menus.h"
 #include <EEPROM.h>
+#include <Wire.h>
+#include <string.h>
 
 byte arrowCursor[8] = {
   // custom charactor for the cursor
@@ -48,7 +50,14 @@ void setup() {
   lcd.write(byte(2));
   pinMode(6,INPUT);
   Serial.begin(9600); // opens serial port with data rate at 9600 bps
+
+  //Master Sender
+  Wire.begin(); // join i2c bus (address optional for master)
+
 }
+
+//For sending data to slave Arduino
+//char x[] = "123";
 
 // Macros: indicate joystick position
 #define NONE 0
@@ -73,7 +82,7 @@ enum ID_States {idle, increment, waitRelease, decrement} ID_State;
 void Tick_IncDec();
 int value = 0;
 
-String data = ""; // data to second
+char data[3]; // data to second
 // first,second,third temporarily hold value to put into data string
 int first = 0;
 int second = 0;
@@ -87,6 +96,9 @@ byte valueRead2;
 byte valueRead3;
 byte num;
 int address = 0; // address to read from EEPROM
+
+//boolean flag for eeprom access
+bool stored = false;
 
 // track if button high, low, being held down
 enum Button_States {low, high, wait} Button_State;
@@ -120,15 +132,16 @@ void upDownArrow() {
   lcd.write(byte(2));
 }
 // preset (hard coded) drinks
-int presetDrinks[4][3] = {
-  {1, 2, 3},
-  {4, 5, 6},
-  {7, 8, 9},
-  {6, 5, 4}
+char presetDrinks[4][3] = {
+  {'1', '2', '3'},
+  {'4', '5', '6'},
+  {'7', '8', '9'},
+  {'6', '5', '4'}
 };
 
 void loop() {
     // read button press from pin6
+      
     buttonPress = digitalRead(6);
 
     delay(1); // 1 millisecond period
@@ -209,6 +222,7 @@ void Tick_Menu() {
       mainMenu();
       break;
     case main:
+     stored = false;
       // uses input from Tick_CursorPos
       if (cursorPos && !buttonHold && buttonPress) { //create state
         M_State = create;
@@ -233,6 +247,7 @@ void Tick_Menu() {
         drindex = 0;
         M_State = presets;
         value = 1;
+       stored = false;
         choosePresetMenu(1, presetDrinks[0]);
       }
       else {
@@ -242,6 +257,11 @@ void Tick_Menu() {
     case presets:
       if (!buttonHold && buttonPress) {
         M_State = confirmDrink;
+        //storing preset drinks in char data[]
+        first = presetDrinks[drindex - 1][0] - '0';
+        second = presetDrinks[drindex - 1][1] - '0';
+        third = presetDrinks[drindex - 1][2] - '0';
+       stored = false;
         confirmDrinkMenu();
       }
       else {
@@ -257,6 +277,7 @@ void Tick_Menu() {
       }
       else if (!buttonHold && buttonPress) {
         M_State = confirmDrink;
+//        stored = true;
         confirmDrinkMenu();
       }
       else {
@@ -268,7 +289,6 @@ void Tick_Menu() {
           M_State = create;
       }
       else {
-          data = String(first) + String(second) + String(third);
           M_State = pourStore;
           pourStoreMenu();
       }
@@ -289,6 +309,8 @@ void Tick_Menu() {
     case confirmDrink:
       if (!cursorPos && !buttonHold && buttonPress) {
         M_State = yesDrink;
+//        sends data when user confirms drink
+        
         pouringDrinkYesMenu();
       }
       else if (cursorPos && !buttonHold && buttonPress) {
@@ -320,11 +342,13 @@ void Tick_Menu() {
         EEPROM.write(addr, third);
         addr = addr + 1;
         //if we want to store even when arduino is off
+        //EEPROM.update(101, addr);
         if (addr == EEPROM.length()) {
           addr = 0;
         }
         ++numStoredDrinks;
         //if we want to store even when arduino is off
+//        EEPROM.update(100, numStoredDrinks);
         storeDrinkYesMenu();
       }
       else if (cursorPos && !buttonHold && buttonPress) {
@@ -336,10 +360,24 @@ void Tick_Menu() {
       }
       break;
     case yesDrink:
-      if (yesDrinkCounter < 2500) {
+      if (yesDrinkCounter < 1500) {
+       if (stored) {
+         data[0] = valueRead + '0';
+         data[1] = valueRead2 + '0';
+         data[2] = valueRead3 + '0';
+       }
+      else {
+          data[0] = first + '0';
+          data[1] = second + '0';
+          data[2] = third + '0';
+      }
+        
         M_State = yesDrink;
       }
       else {
+        Wire.beginTransmission(4500); // transmit to device #9
+        Wire.write(data);              // sends one byte
+        Wire.endTransmission();    // stop transmitting
         yesDrinkCounter = 0;
         M_State = main;
         mainMenu();
@@ -379,6 +417,7 @@ void Tick_Menu() {
       break;
     case customs:
       // range of value limited to number of stored drinks
+      stored = true;
       value = (value >= numStoredDrinks) ? 0 : value;
       value = (value < 0) ? numStoredDrinks : value;
       drindex = value;
@@ -388,9 +427,9 @@ void Tick_Menu() {
       valueRead  = EEPROM.read(drindex+0);
       valueRead2 = EEPROM.read(drindex+1);
       valueRead3 = EEPROM.read(drindex+2);
-      Serial.print(valueRead, DEC);
-      Serial.print(valueRead2, DEC);
-      Serial.print(valueRead3, DEC);
+//      Serial.print(valueRead, DEC);
+//      Serial.print(valueRead2, DEC);
+//      Serial.print(valueRead3, DEC);
       chooseCustomMenu(value + 1, valueRead, valueRead2, valueRead3);
       if (numStoredDrinks > 1) {
         upDownArrow();
